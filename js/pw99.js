@@ -175,9 +175,9 @@
     if (mark) mark.innerHTML = linked ? pwOauthCheck : '&nbsp;';
     if (act) {
       if (linked) {
-        act.innerHTML = '<button type="button" class="set_gray small" data-oauth="' + provider + '" data-act="disconnect" title="Stop using this login">Disconnect</button>';
+        act.innerHTML = '<button type="button" class="set_gray" data-oauth="' + provider + '" data-act="disconnect" title="Stop using this login">Disconnect</button>';
       } else {
-        act.innerHTML = '<button type="button" class="lt_button small" data-oauth="' + provider + '" data-act="connect" title="Link this login">Connect</button>';
+        act.innerHTML = '<button type="button" class="lt_button" data-oauth="' + provider + '" data-act="connect" title="Link this login">Connect</button>';
       }
     }
   }

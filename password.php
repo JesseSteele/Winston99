@@ -1,14 +1,15 @@
 <?php
 declare(strict_types=1);
-$import = ['auth', 'csrf', 'view', 'html', 'user', 'notify', 'passkey', 'oauth', 'audit'];
+$import = ['auth', 'csrf', 'view', 'html', 'user', 'notify', 'passkey', 'oauth', 'audit', 'form'];
 require __DIR__ . '/lib/boot.php';
 $u = $app->auth->requireUser();
-$msg = $err = '';
+$msg = '';
 $uid = $app->auth->id();
 $pks = $app->passkey->list($uid);
 $oauths = $app->oauth->list($uid);
 $canDisable = $pks !== [] && $oauths !== [];
 $noPass = !$app->user->passwordLoginOn($u);
+$form = new Form();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $app->csrf->check()) {
     if (isset($_POST['pw_login_toggle']) && $canDisable) {
@@ -32,16 +33,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $app->csrf->check()) {
         $msg = 'Password login is off.';
         $app->audit->record($uid, 'password_off', 'self');
     } else {
-        $cur = (string) ($_POST['current'] ?? '');
-        $p1 = (string) ($_POST['pass1'] ?? '');
-        $p2 = (string) ($_POST['pass2'] ?? '');
-        if ($p1 === '' && $p2 === '') {
-            // checkbox uncheck does not POST here
-        } elseif (!$noPass && !password_verify($cur, (string) $u['pass'])) {
-            $err = 'Current password is incorrect.';
-        } elseif (strlen($p1) < 8 || $p1 !== $p2) {
-            $err = 'New passwords must match and be at least 8 characters.';
-        } else {
+        $keys = $noPass ? ['pass1', 'pass2'] : ['current', 'pass1', 'pass2'];
+        $form->grab($_POST, ...$keys);
+        $p1 = $form->get('pass1');
+        $p2 = $form->get('pass2');
+        if (!$noPass && !password_verify($form->get('current'), (string) $u['pass'])) {
+            $form->fail('current', 'Current password is incorrect.');
+        }
+        if (strlen($p1) < 8 || $p1 !== $p2) {
+            $form->fail('pass1', 'New passwords must match and be at least 8 characters.');
+            $form->fail('pass2', 'New passwords must match and be at least 8 characters.');
+        }
+        if ($form->ok()) {
             $app->user->setPassword($uid, $p1);
             $msg = 'Password changed.';
             $noPass = false;
@@ -50,15 +53,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $app->csrf->check()) {
             if ($u['editor_id']) {
                 $app->notify->send((int) $u['editor_id'], 'password_change', $u['username'] . ' changed their password', '');
             }
+            $form = new Form();
         }
     }
 }
 
 $app->view->start('Password', 'locker', 'my');
 echo '<h2 class="lt">Password</h2>';
-if ($err) {
-    echo '<p class="sans noticered">' . h($err) . '</p>';
-}
 if ($msg) {
     echo '<p class="sans noticegreen">' . h($msg) . '</p>';
 }
@@ -69,14 +70,15 @@ if ($canDisable) {
         . ($noPass ? ' checked' : '') . '> Disable password login</label></p>';
     echo '</form>';
 }
+$off = $noPass && $canDisable ? ' disabled' : '';
 echo '<form method="post" id="pwform" class="pw-pass-fields' . ($noPass && $canDisable ? ' pw-off' : '') . '">' . $app->csrf->field();
 if (!$noPass) {
-    echo '<p class="sans">Current<br><input type="password" name="current" required' . ($noPass && $canDisable ? ' disabled' : '') . '></p>';
+    echo '<p class="sans">Current<br>' . $form->input('current', 'password', 'required' . $off) . '</p>';
 }
-echo '<p class="sans">New<br><input type="password" name="pass1" required' . ($noPass && $canDisable ? ' disabled' : '') . '></p>';
-echo '<p class="sans">Confirm<br><input type="password" name="pass2" required' . ($noPass && $canDisable ? ' disabled' : '') . '></p>';
+echo '<p class="sans">New<br>' . $form->input('pass1', 'password', 'required' . $off) . '</p>';
+echo '<p class="sans">Confirm<br>' . $form->input('pass2', 'password', 'required' . $off) . '</p>';
 echo '<p><input type="submit" class="lt_button" value="' . ($noPass ? 'Set password' : 'Change password') . '"'
-    . ($noPass && $canDisable ? ' disabled' : '') . '></p></form>';
+    . $off . '></p></form>';
 echo '<script>
 (function(){
   var cb = document.getElementById("disable_password");

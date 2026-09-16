@@ -95,7 +95,7 @@ div#top_menu_nav {
 /* User nav */
 ul.topnav {
   position: relative;
-  margin 0;
+  margin: 0;
 }
 div#topnav {
 	/* background-color:#202020;*/
@@ -103,21 +103,29 @@ div#topnav {
 div#topnav ul {
 	list-style: none;
 	padding:0;
-	height:100%;
+	height:auto;
 	/* background-color:#202020;*/
 	margin:0;
 	position:relative;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: flex-end;
+	column-gap: 0.3em;
+	row-gap: 0.3em;
 }
 div#topnav ul li {
-	display:inline;
-	float:left;
-	/* background-color:#202020;*/
-	padding:10;
+	display:block;
+	float:none;
+	padding:0;
+}
+div#topnav ul li:first-child {
+  margin-right: auto;
 }
 div#topnav ul li.user {
-  padding-left: 0.3em;
-  display:inline;
-	float:right;
+  padding: 0;
+  display:block;
+	float:none;
 }
 /* For topnav links with non-buttons
 div#topnav ul li.selected {
@@ -168,7 +176,7 @@ div.dash_menu_nav {
 /* User nav */
 ul.dashnav {
   position: relative;
-  margin 0;
+  margin: 0;
 }
 div.dashnav {
 	/* background-color:#202020;*/
@@ -176,21 +184,29 @@ div.dashnav {
 div.dashnav ul {
 	list-style: none;
 	padding:0;
-	height:100%;
+	height:auto;
 	/* background-color:#202020;*/
 	margin:0;
 	position:relative;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: flex-end;
+	column-gap: 0.3em;
+	row-gap: 0.3em;
 }
 div.dashnav ul li {
-	display:inline;
-	float:left;
-	/* background-color:#202020;*/
-	padding:10;
+	display:block;
+	float:none;
+	padding:0;
+}
+div.dashnav ul li:first-child {
+  margin-right: auto;
 }
 div.dashnav ul li.user {
-  padding-left: 0.3em;
-  display:inline;
-	float:right;
+  padding: 0;
+  display:block;
+	float:none;
   font:0.72em/1.44em "monospace", "mono", "Andale Mono", "Courier", "Droid Sans Mono", "Courier New";
 }
 
@@ -1258,11 +1274,20 @@ span.noticegreen {
   color: #448844;
 }
 
+input.noticegreen,
+textarea.noticegreen,
+select.noticegreen {
+  border: 2px solid #448844;
+  box-sizing: border-box;
+}
+
 input.error,
 textarea.error,
 input.noticered,
-textarea.noticered {
+textarea.noticered,
+select.noticered {
   border: 2px solid #884444;
+  box-sizing: border-box;
 }
 
 .error,
@@ -1687,7 +1712,7 @@ table.pk-list {
 }
 table.oauth-list {
   table-layout: fixed;
-  width: 23.6em;
+  width: 25.6em;
   max-width: 100%;
 }
 table.oauth-list col.oauth-col-who {
@@ -1697,15 +1722,23 @@ table.oauth-list col.oauth-col-mark {
   width: 4.6em;
 }
 table.oauth-list col.oauth-col-act {
-  width: 8em;
+  width: 10em;
 }
 table.oauth-list td.id-mark {
   width: 4.6em;
   text-align: center;
 }
 table.oauth-list td.id-act {
-  width: 8em;
+  width: 10em;
   text-align: center;
+}
+table.oauth-list td.id-act button {
+  min-width: 9em;
+  box-sizing: border-box;
+}
+.field-hint {
+  display: block;
+  margin-top: 0.25em;
 }
 .pw-login-toggle {
   display: flex;

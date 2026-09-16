@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-$import = ['auth', 'csrf', 'view', 'html', 'text', 'note', 'writ', 'user', 'block', 'notify'];
+$import = ['auth', 'csrf', 'view', 'html', 'text', 'note', 'writ', 'user', 'block', 'notify', 'form'];
 require __DIR__ . '/lib/boot.php';
 $app->auth->requireUser();
 if (!$app->auth->atLeast('editor')) {
@@ -8,6 +8,7 @@ if (!$app->auth->atLeast('editor')) {
 }
 $uid = $app->auth->id();
 $mid = (int) ($_GET['m'] ?? $_POST['m'] ?? 0);
+$form = new Form();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_assignment']) && $app->csrf->check()) {
     $id = $app->note->create([
@@ -19,17 +20,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_assignment']) && 
 }
 
 $memo = $mid ? $app->note->find($mid) : null;
-$msg = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $app->csrf->check() && isset($_POST['create_assignment'])) {
-    $mid = (int) ($_POST['m'] ?? 0);
+    $form->grab($_POST, 'm', 'work', 'title', 'block', 'writer_id');
+    $mid = (int) $form->get('m');
     $memo = $mid ? $app->note->find($mid) : null;
     if (!$memo) {
-        $msg = 'Choose a memo.';
-    } else {
-        $title = writ_title($_POST['title'] ?? '');
-        $work = clean_title($_POST['work'] ?? '');
-        $blockId = (int) ($_POST['block'] ?? 0);
-        $writerId = (int) ($_POST['writer_id'] ?? 0);
+        $form->fail('m', 'Choose a memo.');
+    }
+    if ($form->ok()) {
+        $title = writ_title($form->get('title'));
+        $work = clean_title($form->get('work'));
+        $blockId = (int) $form->get('block');
+        $writerId = (int) $form->get('writer_id');
         $ids = [];
         if ($writerId > 0) {
             $ids[] = $writerId;
@@ -81,20 +83,18 @@ $app->view->start('New assignment', 'assign', 'editor');
 echo '<h2 class="lt">New assignment</h2>';
 echo '<p class="sans dk">An assignment is a writ with a memo attached as instructions. Same form as a new memo, with “make this an assignment” already on.</p>';
 echo '<p>' . post_button('New assignment +', 'Compose a memo and assign it', 'assignment.php', 'new_assignment', '1', 'newNoteButton', $app->csrf->token()) . '</p>';
-if ($msg) {
-    echo '<p class="sans noticered">' . h($msg) . '</p>';
+if ($form->get('m') === '' && $mid) {
+    $form->put('m', (string) $mid);
 }
 echo '<form method="post">' . $app->csrf->field();
-echo '<p class="field sans"><label for="m">Memo</label>';
-echo form_select('m', $memos, $mid, 'Choose a memo…', 'formselect') . '</p>';
+echo '<p class="field sans"><label for="m">Memo</label>' . $form->select('m', $memos, 'Choose a memo…') . '</p>';
 if ($memo) {
     echo '<section class="writcontent remarks">' . nl_text($memo['body']) . '</section>';
 }
-echo '<p class="field sans"><label for="work">Work</label><input name="work" id="work" maxlength="122" placeholder="task-"></p>';
-echo '<p class="field sans"><label for="title">Title</label><input name="title" id="title" maxlength="122" placeholder="Untitled"></p>';
-echo '<p class="field sans"><label for="block">Block</label>';
-echo form_select('block', $blockOpts, 0, 'Main', 'formselect') . '</p>';
+echo '<p class="field sans"><label for="work">Work</label>' . $form->input('work', 'text', 'maxlength="122" placeholder="task-"') . '</p>';
+echo '<p class="field sans"><label for="title">Title</label>' . $form->input('title', 'text', 'maxlength="122" placeholder="Untitled"') . '</p>';
+echo '<p class="field sans"><label for="block">Block</label>' . $form->select('block', $blockOpts, 'Main') . '</p>';
 echo '<p class="field sans"><label for="writer_id">Writer <small class="dk">(overrides Block)</small></label>';
-echo form_select('writer_id', $writerOpts, 0, 'All writers in the block', 'formselect') . '</p>';
+echo $form->select('writer_id', $writerOpts, 'All writers in the block') . '</p>';
 echo '<p><input type="submit" name="create_assignment" class="lt_button" value="Create assignment"></p></form>';
 $app->view->end();

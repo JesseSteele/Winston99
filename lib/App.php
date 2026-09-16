@@ -53,6 +53,7 @@ final class App
         'oauth'     => 'lib/OAuth.php',
         'writlist'  => 'lib/WritList.php',
         'audit'     => 'lib/Audit.php',
+        'form'      => 'lib/Form.php',
     ];
 
     /** @var array<string,true> */
@@ -152,6 +153,9 @@ final class App
                 break;
             case 'audit':
                 $this->audit = new Audit($this);
+                break;
+            case 'form':
+                $this->need('html');
                 break;
             case 'writlist':
                 $this->need('html');

@@ -1,18 +1,23 @@
 <?php
 declare(strict_types=1);
-$import = ['auth', 'csrf', 'view', 'html', 'totp', 'passkey', 'user', 'oauth', 'audit'];
+$import = ['auth', 'csrf', 'view', 'html', 'totp', 'passkey', 'user', 'oauth', 'audit', 'form'];
 require __DIR__ . '/lib/boot.php';
 $u = $app->auth->requireUser();
+$totpForm = new Form();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $app->csrf->check()) {
     if (isset($_POST['totp_start'])) {
         $_SESSION['totp_pending'] = $app->totp->secret();
     } elseif (isset($_POST['totp_confirm']) && !empty($_SESSION['totp_pending'])) {
-        if ($app->totp->verify($_SESSION['totp_pending'], (string) $_POST['code'])) {
+        $totpForm->grab($_POST, 'code');
+        if ($app->totp->verify($_SESSION['totp_pending'], $totpForm->get('code'))) {
             $app->user->setTotp($app->auth->id(), $_SESSION['totp_pending'], true);
             unset($_SESSION['totp_pending']);
             $u = $app->user->find($app->auth->id());
             $app->audit->record($app->auth->id(), 'totp_on', 'self');
+            $totpForm = new Form();
+        } else {
+            $totpForm->fail('code', 'That code did not match.');
         }
     } elseif (isset($_POST['totp_off'])) {
         $app->user->setTotp($app->auth->id(), null, false);
@@ -82,7 +87,7 @@ if (!empty($u['totp_enabled'])) {
     echo '<p class="sans totp-secret"><code>' . h($secret) . '</code></p>';
     echo '<form method="post">' . $app->csrf->field();
     echo '<p class="field sans totp-code-row"><label for="totp_code">Code</label>';
-    echo '<span class="totp-code-line"><input name="code" id="totp_code" inputmode="numeric" autocomplete="one-time-code" required> ';
+    echo '<span class="totp-code-line">' . $totpForm->input('code', 'text', 'id="totp_code" inputmode="numeric" autocomplete="one-time-code" required') . ' ';
     echo '<input type="submit" name="totp_confirm" class="lt_button" value="Confirm"></span></p></form>';
 } else {
     echo '<form method="post">' . $app->csrf->field() . '<input type="submit" name="totp_start" class="lt_button" value="Set up authenticator"></form>';
@@ -132,9 +137,9 @@ foreach (['google' => 'Google', 'github' => 'GitHub'] as $p => $lab) {
     $linkRows .= '<tr><td class="id-who">' . brand_icon($p) . '<span class="id-lab">' . h($lab) . '</span></td>';
     $linkRows .= '<td class="id-mark">' . ($on ? brand_icon('check') : '&nbsp;') . '</td><td class="id-act">';
     if ($on) {
-        $linkRows .= '<button type="button" class="set_gray small" data-oauth="' . h($p) . '" data-act="disconnect" title="Stop using this login">Disconnect</button>';
+        $linkRows .= '<button type="button" class="set_gray" data-oauth="' . h($p) . '" data-act="disconnect" title="Stop using this login">Disconnect</button>';
     } else {
-        $linkRows .= '<button type="button" class="lt_button small" data-oauth="' . h($p) . '" data-act="connect" title="Link this login">Connect</button>';
+        $linkRows .= '<button type="button" class="lt_button" data-oauth="' . h($p) . '" data-act="connect" title="Link this login">Connect</button>';
     }
     $linkRows .= '</td></tr>';
 }
