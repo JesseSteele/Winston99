@@ -114,10 +114,10 @@ if ($pks) {
     }
     echo '</tbody></table>';
 }
-$jsV = h(pw99_asset_v(__DIR__ . '/js/pw99.js'));
-$qrV = h(pw99_asset_v(__DIR__ . '/js/qrcodegen.js'));
+$jsV = h(winston99_asset_v(__DIR__ . '/js/winston99.js'));
+$qrV = h(winston99_asset_v(__DIR__ . '/js/qrcodegen.js'));
 echo '<script src="js/qrcodegen.js?v=' . $qrV . '"></script>';
-echo '<script src="js/pw99.js?v=' . $jsV . '"></script>';
+echo '<script src="js/winston99.js?v=' . $jsV . '"></script>';
 echo '<script>document.getElementById("pkadd").onclick=function(){pwPasskeyRegister("passkey-create.php","security.php",' . json_encode($app->csrf->token()) . ');};';
 if (!empty($_SESSION['totp_pending'])) {
     echo 'pwDrawTotpQr("totp-qr");';

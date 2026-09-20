@@ -264,7 +264,7 @@ final class Auth
         return ['inapp' => $inapp, 'email' => $email];
     }
 
-    private const TRUST_COOKIE = 'pw99_trust';
+    private const TRUST_COOKIE = 'winston99_trust';
     private const TRUST_DAYS = 30;
 
     public function deviceTrusted(int $userId): bool

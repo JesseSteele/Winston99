@@ -7,7 +7,7 @@ if (!$app->auth->atLeast('supervisor')) {
     $app->redirect('editor.php');
 }
 
-$back = pw99_blocks_return();
+$back = winston99_blocks_return();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !$app->csrf->check()) {
     $app->view->setFlash('That block action did not go through. Try again.', false);

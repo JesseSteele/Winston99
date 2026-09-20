@@ -17,7 +17,7 @@ PHP 8 + MariaDB (InnoDB) + PDO. Object pages import only the modules they use (`
 Walk-in Superintendent recovery: set `allow_create_super` to `true` in config, open `install.php`, then set it `false` again.
 
 ## Update
-- CLI: `php bin/update.php` or `bash bin/pw99-update`
+- CLI: `php bin/update.php` or `bash bin/update`
 - Admin / Superintendent locker: **Update app**
 - Pulls the GitHub branch named in `config.php` as `stream` (never overwrites `config.php`), then runs SQL migrations.
 - If `stream` is missing, older `github_branch` still works. The name `main` is treated as `master`.

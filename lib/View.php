@@ -23,15 +23,15 @@ final class View
         echo '<meta name="robots" content="noindex">';
         echo '<meta charset="utf-8">';
         echo '<meta name="viewport" content="width=device-width, initial-scale=1" />';
-        $cssV = pw99_asset_v(__DIR__ . '/../css/styles.css');
-        $jsV = pw99_asset_v(__DIR__ . '/../js/pw99.js');
+        $cssV = winston99_asset_v(__DIR__ . '/../css/styles.css');
+        $jsV = winston99_asset_v(__DIR__ . '/../js/winston99.js');
         echo '<link rel="stylesheet" href="css/styles.css?v=' . h($cssV) . '" type="text/css" />';
-        $theme = pw99_theme_id($u);
+        $theme = winston99_theme_id($u);
         $themeFile = __DIR__ . '/../css/' . $theme . '.css';
         if (is_file($themeFile)) {
-            echo '<link rel="stylesheet" id="pw-theme-css" href="css/' . h($theme) . '.css?v=' . h(pw99_asset_v($themeFile)) . '" type="text/css" />';
+            echo '<link rel="stylesheet" id="winston99-theme-css" href="css/' . h($theme) . '.css?v=' . h(winston99_asset_v($themeFile)) . '" type="text/css" />';
         }
-        echo '<script src="js/pw99.js?v=' . h($jsV) . '"></script>';
+        echo '<script src="js/winston99.js?v=' . h($jsV) . '"></script>';
         echo '<meta http-equiv="Cache-Control" content="no-cache" />';
         echo '<meta http-equiv="Pragma" content="no-cache" />';
         echo '<meta http-equiv="Expires" content="0" />';

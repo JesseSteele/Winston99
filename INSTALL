@@ -12,7 +12,7 @@ Linux, Apache (or nginx), PHP 8, MariaDB. Same class of host as WordPress.
 4. Log in as the Superintendent. Create a Facility, then an Administrator.
 
 ## Packages
-Arch/Debian/RPM builders live in [99-package](https://github.com/PinkWrite/99-package). Same installer: `contrib/pw99-install`. `--webroot` sets destination; interactive does not ask for it. Verb uses `ink install winston99 -d domain.tld`.
+Arch/Debian/RPM builders live in [99-package](https://github.com/PinkWrite/99-package). Same installer: `contrib/install`. `--webroot` sets destination; interactive does not ask for it. Verb uses `ink install winston99 -d domain.tld`.
 
 ## Mail
 Edit `config.php` (`mail` key). SMTP password lives there on purpose. This is SysAdmin work.

@@ -23,8 +23,8 @@ return [
     'db' => [
         'host' => '127.0.0.1', // TCP. Do not use localhost (that is a Unix socket).
         'port' => 3306,
-        'name' => 'pw99db',
-        'user' => 'pw99db',
+        'name' => 'winston99db',
+        'user' => 'winston99db',
         'pass' => 'change-me',
         'charset' => 'utf8mb4',
     ],
@@ -43,7 +43,7 @@ return [
 
     'github' => 'https://github.com/JesseSteele/Winston99.git',
 
-    // Update stream: Git branch pulled by bin/pw99-update. SysAdmin-only.
+    // Update stream: Git branch pulled by bin/update. SysAdmin-only.
     // Never change this from the web app. Edit this file.
     //   main       — published default for new installs
     //   developer  — in-progress work

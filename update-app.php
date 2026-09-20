@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $app->csrf->check()) {
 $app->view->start('Update', 'locker', 'super');
 echo '<h2 class="lt">Update</h2>';
 echo '<p class="sans dk">Pulls GitHub master (config file is never overwritten) then runs SQL migrations — including the one-time lift of a legacy dump.</p>';
-echo '<p class="sans">CLI: <code>php bin/update.php</code> or <code>bash bin/pw99-update</code></p>';
+echo '<p class="sans">CLI: <code>php bin/update.php</code> or <code>bash bin/update</code></p>';
 echo '<form method="post">' . $app->csrf->field();
 echo '<p><label><input type="checkbox" name="pull" value="1" checked> git pull / clone</label></p>';
 echo '<p><input type="submit" class="lt_button" value="Run update"></p></form>';

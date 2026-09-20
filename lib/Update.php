@@ -47,7 +47,7 @@ final class Update
             );
             return 'git [' . $branch . ']: ' . implode("\n", array_merge($out, $out2)) . " (exit {$code2})";
         }
-        $tmp = sys_get_temp_dir() . '/pw99-update-' . getmypid();
+        $tmp = sys_get_temp_dir() . '/winston99.update.' . getmypid();
         $cmd = 'git clone --depth 1 --branch ' . escapeshellarg($branch) . ' '
             . escapeshellarg($repo) . ' ' . escapeshellarg($tmp) . ' 2>&1';
         $out = [];
@@ -118,6 +118,6 @@ final class Update
     public function migrate(): string
     {
         require_once $this->app->root . '/sql/migrate.php';
-        return pw99_migrate($this->app);
+        return winston99_migrate($this->app);
     }
 }
