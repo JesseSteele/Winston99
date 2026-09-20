@@ -2,7 +2,7 @@ function download(){
     var writtenText = document.getElementById("writingArea").value;
     var blob = new Blob([writtenText], { type: "text/plain"});
     var anchor = document.createElement("a");
-//    anchor.download = "PinkWrite-FILE.txt";
+//    anchor.download = "Winston-FILE.txt";
 //    anchor.download = document.getElementById(saveasname).textContent;
     var saveasname = document.getElementById("saveName").value;
     anchor.download = saveasname;

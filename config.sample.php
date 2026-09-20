@@ -1,6 +1,6 @@
 <?php
 /**
- * PinkWrite 99 — SysAdmin config.
+ * Winston 99 — SysAdmin config.
  * Copy to config.php and edit. Never commit the live file.
  * The in-app Administrator does not edit this. Mail, host, and DB are SysAdmin work.
  */
@@ -18,7 +18,7 @@ return [
     // www. is the SysAdmin's choice. The app always uses https://
     'host' => 'write.pink/99',
 
-    'site_title' => 'PinkWrite 99',
+    'site_title' => 'Winston 99',
 
     'db' => [
         'host' => '127.0.0.1', // TCP. Do not use localhost (that is a Unix socket).
@@ -33,7 +33,7 @@ return [
     'mail' => [
         'transport' => 'mail', // mail | smtp | off
         'from' => 'noreply@write.pink',
-        'from_name' => 'PinkWrite 99',
+        'from_name' => 'Winston 99',
         'smtp_host' => '127.0.0.1',
         'smtp_port' => 587,
         'smtp_user' => '',
@@ -41,7 +41,7 @@ return [
         'smtp_secure' => 'tls', // tls | ssl | none
     ],
 
-    'github' => 'https://github.com/PinkWrite/99.git',
+    'github' => 'https://github.com/JesseSteele/Winston99.git',
 
     // Update stream: Git branch pulled by bin/pw99-update. SysAdmin-only.
     // Never change this from the web app. Edit this file.

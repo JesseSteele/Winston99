@@ -25,7 +25,7 @@ final class Mailer
             return false;
         }
         $from = (string) ($this->cfg['from'] ?? 'noreply@localhost');
-        $fromName = (string) ($this->cfg['from_name'] ?? 'PinkWrite 99');
+        $fromName = (string) ($this->cfg['from_name'] ?? 'Winston 99');
         $transport = $this->cfg['transport'] ?? 'mail';
         if ($transport === 'smtp') {
             return $this->smtp($to, $from, $fromName, $subject, $body);
@@ -46,13 +46,13 @@ final class Mailer
             return false;
         }
         $this->expect($fp, '220');
-        $this->cmd($fp, 'EHLO pinkwrite99');
+        $this->cmd($fp, 'EHLO winston99');
         $this->expect($fp, '250');
         if ($secure === 'tls') {
             $this->cmd($fp, 'STARTTLS');
             $this->expect($fp, '220');
             stream_socket_enable_crypto($fp, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
-            $this->cmd($fp, 'EHLO pinkwrite99');
+            $this->cmd($fp, 'EHLO winston99');
             $this->expect($fp, '250');
         }
         $user = (string) ($this->cfg['smtp_user'] ?? '');

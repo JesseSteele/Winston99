@@ -1,6 +1,6 @@
 <?php
 /**
- * PinkWrite 99 boot.
+ * Winston 99 boot.
  *
  * Each page declares $import = ['auth','view',...]; then requires this file.
  * Only those modules load. Boot itself loads config + PDO. Nothing else.
@@ -11,16 +11,16 @@ if (!function_exists('pw99_fail')) {
     function pw99_fail(Throwable $e): void
     {
         if (PHP_SAPI === 'cli') {
-            fwrite(STDERR, 'PinkWrite 99: ' . $e->getMessage() . "\n" . $e->getFile() . ':' . $e->getLine() . "\n" . $e->getTraceAsString() . "\n");
+            fwrite(STDERR, 'Winston 99: ' . $e->getMessage() . "\n" . $e->getFile() . ':' . $e->getLine() . "\n" . $e->getTraceAsString() . "\n");
             exit(1);
         }
         if (!headers_sent()) {
             http_response_code(500);
             header('Content-Type: text/html; charset=utf-8');
         }
-        echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>PinkWrite 99</title></head><body>';
+        echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Winston 99</title></head><body>';
         echo '<pre style="white-space:pre-wrap;font:14px/1.4 monospace;max-width:70em">';
-        echo "PinkWrite 99 could not run this page.\n\n";
+        echo "Winston 99 could not run this page.\n\n";
         echo htmlspecialchars($e->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'), "\n\n";
         echo htmlspecialchars($e->getFile() . ':' . $e->getLine(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'), "\n\n";
         echo htmlspecialchars($e->getTraceAsString(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
@@ -47,7 +47,7 @@ $stub = static function () use ($pw99Root, $import): App {
     $app = new App($pw99Root, [
         'configured' => false,
         'host' => '',
-        'site_title' => 'PinkWrite 99',
+        'site_title' => 'Winston 99',
         'db' => [],
         'mail' => ['transport' => 'off'],
     ], null);
@@ -106,7 +106,7 @@ if (!empty($config['db']['name'])) {
         $ajax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH'])
                 && strtolower((string) $_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
             || (isset($_POST['ajax']) && (string) $_POST['ajax'] === '1');
-        error_log('PinkWrite 99: database connection failed: ' . $e->getMessage());
+        error_log('Winston 99: database connection failed: ' . $e->getMessage());
         http_response_code(503);
         if ($ajax) {
             header('Content-Type: application/json; charset=utf-8');

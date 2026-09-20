@@ -55,8 +55,8 @@ final class View
         echo '<div class="footer"><p class="dk sans">';
         echo '<a class="dk" href="Terms.htm">Terms & Conditions</a> | ';
         echo '<a class="dk" href="Privacy.htm">Privacy</a> | ';
-        echo '<a class="dk" href="https://github.com/PinkWrite/99">OpenSource project from GitHub</a> | ';
-        echo '<a class="dk" href="https://pinkwrite.com">pinkwrite.com</a> &nbsp; - &nbsp; &copy; PinkWrite, ';
+        echo '<a class="dk" href="https://github.com/JesseSteele/Winston99">OpenSource project from GitHub</a> | ';
+        echo '<a class="dk" href="https://winston.software">winston.software</a> &nbsp; - &nbsp; &copy; Winston, ';
         echo '<a class="dk" href="https://www.gnu.org/licenses/gpl-3.0.en.html">GPLv3</a></p></div>';
         echo '</div></div></body></html>';
     }
@@ -104,7 +104,7 @@ final class View
         $on = fn (string $d) => $dash === $d ? 'activedash' : '';
         $type = $u['type'];
         echo '<div id="top_menu_nav"><div id="topnav"><ul class="topnav">';
-        echo '<li><h1><a class="dklink" href="index.php">PinkWrite 99</a></h1></li>';
+        echo '<li><h1><a class="dklink" href="index.php">' . h($this->app->title()) . '</a></h1></li>';
         echo '<li class="user">' . button('My Dash', 'Home', 'index.php', 'navButton user ' . $on('my')) . '</li>';
         if ($type !== 'observer') {
             echo '<li class="user">' . button('Writer Dash', 'Writing workspace', 'writer-dash.php', 'navButton user ' . $on('writer')) . '</li>';

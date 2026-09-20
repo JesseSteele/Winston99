@@ -1,4 +1,4 @@
-# PinkWrite 99
+# Winston 99
 **Typing and Editing for Learners and Teachers**
 
 A composition classroom: Writers draft without paste-cheating, Editors review and redraft, Observers watch, Administrators run a Facility (school), a Superintendent runs several Facilities. Blocks are classes.
@@ -46,7 +46,7 @@ Empty `id` or `secret` in `config.php` hides that button. Callback for both prov
 ```
 
 ## Migrating an old dump
-The mysqli-era tree and `sql/legacy-lift.sql` live on the [legacy](https://github.com/PinkWrite/99/tree/legacy) history. Read that README. Import the dump into an empty database, then `php bin/update.php` on `master` (same lift in PHP).
+The mysqli-era tree and `sql/legacy-lift.sql` live on the [legacy](https://github.com/JesseSteele/Winston99/tree/legacy) history. Read that README. Import the dump into an empty database, then `php bin/update.php` on `master` (same lift in PHP).
 
 ## Roles
 | Role | Seat |

@@ -1,7 +1,7 @@
 #!/bin/bash
-# PinkWrite 99 installer. Same script in every package tree.
+# Winston 99 installer. Same script in every package tree.
 # Destination is --webroot (or the commented default). Interactive does not ask for it.
-# Verb: --webroot /srv/www/vapps/pw99.DOMAIN --nginx-server-name DOMAIN
+# Verb: --webroot /srv/www/vapps/winston99.DOMAIN --nginx-server-name DOMAIN
 # Config lives at webroot/config.php (PHP reads it there) and is linked to /etc/pw99/config.
 set -euo pipefail
 
@@ -10,7 +10,7 @@ DB_USER=pw99
 DB_PASS=
 DB_HOST=127.0.0.1
 HOST=localhost
-SITE_TITLE="PinkWrite 99"
+SITE_TITLE="Winston 99"
 NGINX_NAME=
 NGINX_LISTEN=80
 WEBROOT=/srv/www/pw99
@@ -97,7 +97,7 @@ return [
         'smtp_pass' => '',
         'smtp_secure' => 'tls',
     ],
-    'github' => 'https://github.com/PinkWrite/99.git',
+    'github' => 'https://github.com/JesseSteele/Winston99.git',
     'stream' => 'main',
     'oauth' => [
         'google' => ['id' => '', 'secret' => ''],
