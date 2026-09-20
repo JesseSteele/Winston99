@@ -3,7 +3,7 @@ declare(strict_types=1);
 ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
-define('PW99_INSTALLING', true);
+define('WINSTON99_INSTALLING', true);
 $import = ['html', 'text'];
 try {
     require __DIR__ . '/lib/boot.php';
@@ -150,7 +150,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['install'])) {
         try {
             $app->need('user');
             require_once __DIR__ . '/sql/migrate.php';
-            pw99_migrate($app);
+            winston99_migrate($app);
             if ($app->user->findByUsername($username) || $app->user->findByEmail($email)) {
                 $errors[] = 'That username or email already exists.';
             } else {
@@ -180,8 +180,8 @@ if (!function_exists('h')) {
 
 ?><!DOCTYPE html>
 <html><head><meta charset="utf-8"><title>Install Winston 99</title>
-<link rel="stylesheet" href="css/styles.css?v=<?php echo h(function_exists('pw99_asset_v') ? pw99_asset_v(__DIR__ . '/css/styles.css') : (string) time()); ?>">
-<link rel="stylesheet" href="css/theme-dusk-desk.css?v=<?php echo h(function_exists('pw99_asset_v') ? pw99_asset_v(__DIR__ . '/css/theme-dusk-desk.css') : (string) time()); ?>">
+<link rel="stylesheet" href="css/styles.css?v=<?php echo h(function_exists('winston99_asset_v') ? winston99_asset_v(__DIR__ . '/css/styles.css') : (string) time()); ?>">
+<link rel="stylesheet" href="css/theme-dusk-desk.css?v=<?php echo h(function_exists('winston99_asset_v') ? winston99_asset_v(__DIR__ . '/css/theme-dusk-desk.css') : (string) time()); ?>">
 </head><body><div id="wrap"><div class="page"><div class="content">
 <h1 class="sans">Install Winston 99</h1>
 <p class="sans">SysAdmin only. Mail, host, and database live in <code>config.php</code>.</p>

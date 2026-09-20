@@ -7,7 +7,7 @@ if (!$app->auth->is('superintendent')) {
     $app->redirect('');
 }
 
-$back = pw99_facilities_return();
+$back = winston99_facilities_return();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !$app->csrf->check()) {
     $app->view->setFlash('That facility action did not go through. Try again.', false);

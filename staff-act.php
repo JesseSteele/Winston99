@@ -15,7 +15,7 @@ if (!$app->auth->atLeast('supervisor')) {
     $app->redirect('editor.php');
 }
 
-$back = pw99_people_return($type);
+$back = winston99_people_return($type);
 $noun = match ($type) {
     'observer' => 'observer',
     'writer' => 'writer',

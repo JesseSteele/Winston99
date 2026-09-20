@@ -2,19 +2,19 @@
 # Winston 99 installer. Same script in every package tree.
 # Destination is --webroot (or the commented default). Interactive does not ask for it.
 # Verb: --webroot /srv/www/vapps/winston99.DOMAIN --nginx-server-name DOMAIN
-# Config lives at webroot/config.php (PHP reads it there) and is linked to /etc/pw99/config.
+# Config lives at webroot/config.php (PHP reads it there) and is linked to /etc/winston99/config.
 set -euo pipefail
 
-DB_NAME=pw99
-DB_USER=pw99
+DB_NAME=winston99
+DB_USER=winston99
 DB_PASS=
 DB_HOST=127.0.0.1
 HOST=localhost
 SITE_TITLE="Winston 99"
 NGINX_NAME=
 NGINX_LISTEN=80
-WEBROOT=/srv/www/pw99
-ETC=/etc/pw99
+WEBROOT=/srv/www/winston99
+ETC=/etc/winston99
 INTERACTIVE=0
 
 while [ $# -gt 0 ]; do
@@ -32,10 +32,10 @@ while [ $# -gt 0 ]; do
     --nginx-listen) NGINX_LISTEN=$2; shift 2;;
     --interactive) INTERACTIVE=1; shift;;
     -h|--help)
-      echo "pw99-install [--webroot DIR] [--etc DIR] [--db-name N] [--db-user U] [--db-pass P] [--host domain.tld] [--nginx-server-name HOST] [--interactive]"
+      echo "install [--webroot DIR] [--etc DIR] [--db-name N] [--db-user U] [--db-pass P] [--host domain.tld] [--nginx-server-name HOST] [--interactive]"
       echo "  --webroot is a flag/default only. Interactive will not prompt for it."
       echo "  --host is everything after https:// (no scheme)."
-      echo "  Verb example: pw99-install --webroot /srv/www/vapps/pw99.inkisaverb.com --host 99.inkisaverb.com --nginx-server-name 99.inkisaverb.com"
+      echo "  Verb example: install --webroot /srv/www/vapps/winston99.inkisaverb.com --host 99.inkisaverb.com --nginx-server-name 99.inkisaverb.com"
       exit 0;;
     *) echo "unknown $1"; exit 1;;
   esac
@@ -57,8 +57,8 @@ if [ -f "$HERE/../index.php" ]; then
   APP_ROOT=$(cd "$HERE/.." && pwd)
 elif [ -f "$HERE/index.php" ]; then
   APP_ROOT=$HERE
-elif [ -f /usr/share/pw99/index.php ]; then
-  APP_ROOT=/usr/share/pw99
+elif [ -f /usr/share/winston99/index.php ]; then
+  APP_ROOT=/usr/share/winston99
 else
   APP_ROOT=$HERE
 fi
@@ -118,15 +118,15 @@ if command -v mariadb >/dev/null && [ -n "$DB_PASS" ]; then
 fi
 
 NGINX_SRC=""
-for c in "$HERE/pw99.conf" "$HERE/nginx/pw99.conf" /usr/share/pw99/nginx/pw99.conf; do
+for c in "$HERE/winston99.conf" "$HERE/nginx/winston99.conf" /usr/share/winston99/nginx/winston99.conf; do
   [ -f "$c" ] && NGINX_SRC=$c && break
 done
 if [ -n "$NGINX_NAME" ] && [ -n "$NGINX_SRC" ]; then
-  conf=/etc/nginx/http.d/pw99.conf
-  [ -d /etc/nginx/sites-available ] && conf=/etc/nginx/sites-available/pw99
-  sed -e "s/example.tld/$NGINX_NAME/g" -e "s#/srv/www/pw99#$WEBROOT#g" \
+  conf=/etc/nginx/http.d/winston99.conf
+  [ -d /etc/nginx/sites-available ] && conf=/etc/nginx/sites-available/winston99
+  sed -e "s/example.tld/$NGINX_NAME/g" -e "s#/srv/www/winston99#$WEBROOT#g" \
       -e "s/listen 80/listen $NGINX_LISTEN/" "$NGINX_SRC" > "$conf"
-  [ -d /etc/nginx/sites-enabled ] && ln -sfn "$conf" /etc/nginx/sites-enabled/pw99
+  [ -d /etc/nginx/sites-enabled ] && ln -sfn "$conf" /etc/nginx/sites-enabled/winston99
   nginx -t && systemctl reload nginx || true
 fi
 

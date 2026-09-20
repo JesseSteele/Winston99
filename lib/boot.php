@@ -7,8 +7,8 @@
  */
 declare(strict_types=1);
 
-if (!function_exists('pw99_fail')) {
-    function pw99_fail(Throwable $e): void
+if (!function_exists('winston99_fail')) {
+    function winston99_fail(Throwable $e): void
     {
         if (PHP_SAPI === 'cli') {
             fwrite(STDERR, 'Winston 99: ' . $e->getMessage() . "\n" . $e->getFile() . ':' . $e->getLine() . "\n" . $e->getTraceAsString() . "\n");
@@ -27,24 +27,24 @@ if (!function_exists('pw99_fail')) {
         echo "</pre></body></html>";
         exit(1);
     }
-    set_exception_handler('pw99_fail');
+    set_exception_handler('winston99_fail');
 }
 
 if (!isset($import) || !is_array($import)) {
     $import = [];
 }
 
-$pw99Root = dirname(__DIR__);
+$winston99Root = dirname(__DIR__);
 
-require $pw99Root . '/lib/App.php';
-require $pw99Root . '/lib/Db.php';
-require $pw99Root . '/functions/text.php';
+require $winston99Root . '/lib/App.php';
+require $winston99Root . '/lib/Db.php';
+require $winston99Root . '/functions/text.php';
 
-$configFile = $pw99Root . '/config.php';
-$installing = (defined('PW99_INSTALLING') && PW99_INSTALLING === true);
+$configFile = $winston99Root . '/config.php';
+$installing = (defined('WINSTON99_INSTALLING') && WINSTON99_INSTALLING === true);
 
-$stub = static function () use ($pw99Root, $import): App {
-    $app = new App($pw99Root, [
+$stub = static function () use ($winston99Root, $import): App {
+    $app = new App($winston99Root, [
         'configured' => false,
         'host' => '',
         'site_title' => 'Winston 99',
@@ -72,7 +72,7 @@ try {
         $app->bootError = $e->getMessage();
         return;
     }
-    pw99_fail($e);
+    winston99_fail($e);
 }
 
 if (!is_array($config)) {
@@ -98,7 +98,7 @@ if (!empty($config['db']['name'])) {
         $db = Db::connect($config['db']);
     } catch (Throwable $e) {
         if ($installing) {
-            $app = new App($pw99Root, $config, null);
+            $app = new App($winston99Root, $config, null);
             $app->bootError = $e->getMessage();
             $app->load($import);
             return;
@@ -125,7 +125,7 @@ if (!empty($config['db']['name'])) {
     }
 }
 
-$app = new App($pw99Root, $config, $db);
+$app = new App($winston99Root, $config, $db);
 try {
     $app->load($import);
 } catch (Throwable $e) {
@@ -133,5 +133,5 @@ try {
         $app->bootError = $e->getMessage();
         return;
     }
-    pw99_fail($e);
+    winston99_fail($e);
 }

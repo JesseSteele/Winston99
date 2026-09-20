@@ -13,14 +13,14 @@ function empty_list(): string
 }
 
 /** Cache-bust query for a static file: content hash, so a stale sheet cannot survive a CSS edit. */
-function pw99_asset_v(string $abs): string
+function winston99_asset_v(string $abs): string
 {
     $h = is_file($abs) ? md5_file($abs) : false;
     return is_string($h) && $h !== '' ? substr($h, 0, 10) : (string) time();
 }
 
 /** Theme id => display name from css/theme-*.css `@theme Name` comments. */
-function pw99_themes(): array
+function winston99_themes(): array
 {
     $dir = dirname(__DIR__) . '/css';
     $found = [];
@@ -46,15 +46,15 @@ function pw99_themes(): array
     return $out;
 }
 
-function pw99_theme_id(?array $user): string
+function winston99_theme_id(?array $user): string
 {
     $want = '';
     if ($user) {
         $p = json_arr($user['notify_prefs'] ?? []);
         $want = (string) ($p['theme'] ?? '');
     }
-    if ($want === '' && !empty($_COOKIE['pw_theme'])) {
-        $want = (string) $_COOKIE['pw_theme'];
+    if ($want === '' && !empty($_COOKIE['winston99_theme'])) {
+        $want = (string) $_COOKIE['winston99_theme'];
     }
     $want = preg_replace('/[^a-z0-9\-]/', '', $want) ?? '';
     $dir = dirname(__DIR__) . '/css';
@@ -65,12 +65,12 @@ function pw99_theme_id(?array $user): string
     if (is_file($dir . '/' . $def . '.css')) {
         return $def;
     }
-    $ids = array_keys(pw99_themes());
+    $ids = array_keys(winston99_themes());
     return (string) ($ids[0] ?? $def);
 }
 
 /** Open/closed blocks list the editor came from. */
-function pw99_blocks_return(?string $raw = null): string
+function winston99_blocks_return(?string $raw = null): string
 {
     $allow = ['blocks-closed.php', 'blocks-editor.php'];
     foreach ([$raw, $_POST['return'] ?? '', $_GET['return'] ?? '', $_SERVER['HTTP_REFERER'] ?? ''] as $c) {
@@ -86,7 +86,7 @@ function pw99_blocks_return(?string $raw = null): string
 }
 
 /** Active/dormant people list the staff came from. */
-function pw99_people_return(string $type, ?string $raw = null): string
+function winston99_people_return(string $type, ?string $raw = null): string
 {
     $allow = match ($type) {
         'observer' => ['observers.php', 'observers-dormant.php'],
@@ -107,13 +107,13 @@ function pw99_people_return(string $type, ?string $raw = null): string
 }
 
 /** Active/dormant editors list the admin came from. */
-function pw99_editors_return(?string $raw = null): string
+function winston99_editors_return(?string $raw = null): string
 {
-    return pw99_people_return('editor', $raw);
+    return winston99_people_return('editor', $raw);
 }
 
 /** Open/closed facilities list the superintendent came from. */
-function pw99_facilities_return(?string $raw = null): string
+function winston99_facilities_return(?string $raw = null): string
 {
     $allow = ['facilities.php', 'facilities-closed.php'];
     foreach ([$raw, $_POST['return'] ?? '', $_GET['return'] ?? '', $_SERVER['HTTP_REFERER'] ?? ''] as $c) {
@@ -128,16 +128,16 @@ function pw99_facilities_return(?string $raw = null): string
     return 'facilities.php';
 }
 
-function pw99_set_theme_cookie(string $id): void
+function winston99_set_theme_cookie(string $id): void
 {
-    setcookie('pw_theme', $id, [
+    setcookie('winston99_theme', $id, [
         'expires' => time() + 86400 * 400,
         'path' => '/',
         'secure' => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'),
         'httponly' => false,
         'samesite' => 'Lax',
     ]);
-    $_COOKIE['pw_theme'] = $id;
+    $_COOKIE['winston99_theme'] = $id;
 }
 
 /** Original geometric marks (passkey, G) plus nominative GitHub silhouette for login buttons. */

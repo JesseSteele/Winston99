@@ -7,7 +7,7 @@ if (!$app->auth->atLeast('supervisor')) {
     $app->redirect('');
 }
 $bid = (int) ($_GET['b'] ?? $_POST['b'] ?? 0);
-$back = pw99_blocks_return();
+$back = winston99_blocks_return();
 $b = $app->block->find($bid);
 if (!$b) {
     $app->redirect($back);

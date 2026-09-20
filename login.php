@@ -99,6 +99,6 @@ if ($needTotp) {
         echo id_login_button($p, $lab, 'oauth.php?p=' . rawurlencode($p));
     }
     echo '</div>';
-    echo '<script src="js/pw99.js"></script><script>document.getElementById("pkbtn").onclick=function(){pwPasskeyLogin("passkey-options.php");};</script>';
+    echo '<script src="js/winston99.js"></script><script>document.getElementById("pkbtn").onclick=function(){pwPasskeyLogin("passkey-options.php");};</script>';
 }
 $app->view->end();

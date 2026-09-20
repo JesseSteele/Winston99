@@ -3,30 +3,34 @@ declare(strict_types=1);
 
 /**
  * Apply pending SQL. Also lifts a legacy mysqli-era dump into this schema.
- * Safe to run many times. Called from install, bin/pw99-update, and Admin Locker.
+ * Safe to run many times. Called from install, bin/update, and Admin Locker.
  */
-function pw99_migrate(App $app): string
+function winston99_migrate(App $app): string
 {
     $db = $app->db;
     if (!$db) {
         return 'no database';
     }
     $notes = [];
+    $sweep = winston99_sweep_legacy($app);
+    if ($sweep !== '') {
+        $notes[] = $sweep;
+    }
     if (!$db->tableExists('schema_version')) {
-        $notes[] = pw99_apply_schema_file($db, $app->root . '/sql/schema.sql');
+        $notes[] = winston99_apply_schema_file($db, $app->root . '/sql/schema.sql');
     }
     if ($db->tableExists('users') && !$db->columnExists('users', 'facility_id')) {
-        $notes[] = pw99_legacy_lift($db);
+        $notes[] = winston99_legacy_lift($db);
     }
-    $promo = pw99_ensure_superintendent($db);
+    $promo = winston99_ensure_superintendent($db);
     if ($promo !== '') {
         $notes[] = $promo;
     }
-    $cols = pw99_ensure_rewrite_columns($db);
+    $cols = winston99_ensure_rewrite_columns($db);
     if ($cols !== '') {
         $notes[] = $cols;
     }
-    $soft = pw99_soften_legacy_notnull($db);
+    $soft = winston99_soften_legacy_notnull($db);
     if ($soft !== '') {
         $notes[] = $soft;
     }
@@ -137,7 +141,49 @@ function pw99_migrate(App $app): string
     return $notes ? implode('; ', $notes) : 'schema current';
 }
 
-function pw99_apply_schema_file(Db $db, string $file): string
+/** Drop old PinkWrite 99 filenames; move /etc/pw99; retitle config. Does not touch oauth keys. */
+function winston99_sweep_legacy(App $app): string
+{
+    $notes = [];
+    foreach (['bin/pw99-update', 'js/pw99.js', 'contrib/pw99-install', 'dev/pw99-config.php'] as $rel) {
+        $p = $app->root . '/' . $rel;
+        if (is_file($p) && @unlink($p)) {
+            $notes[] = 'removed ' . $rel;
+        }
+    }
+    if (is_dir('/etc/pw99') && !is_dir('/etc/winston99') && @rename('/etc/pw99', '/etc/winston99')) {
+        $notes[] = '/etc/winston99';
+    }
+    $cfgFile = $app->root . '/config.php';
+    if (is_file($cfgFile) && is_writable($cfgFile)) {
+        $c = include $cfgFile;
+        if (is_array($c)) {
+            $changed = false;
+            if (($c['site_title'] ?? '') === 'PinkWrite 99') {
+                $c['site_title'] = 'Winston 99';
+                $changed = true;
+            }
+            $gh = (string) ($c['github'] ?? '');
+            if ($gh !== '' && (str_contains($gh, 'PinkWrite/99') || str_contains($gh, 'pinkwrite/99'))) {
+                $c['github'] = 'https://github.com/JesseSteele/Winston99.git';
+                $changed = true;
+            }
+            if (($c['mail']['from_name'] ?? '') === 'PinkWrite 99') {
+                $c['mail']['from_name'] = 'Winston 99';
+                $changed = true;
+            }
+            if ($changed) {
+                $out = "<?php\nreturn " . var_export($c, true) . ";\n";
+                if (@file_put_contents($cfgFile, $out) !== false) {
+                    $notes[] = 'config.php name/github';
+                }
+            }
+        }
+    }
+    return implode('; ', $notes);
+}
+
+function winston99_apply_schema_file(Db $db, string $file): string
 {
     $sql = file_get_contents($file);
     if ($sql === false) {
@@ -157,7 +203,7 @@ function pw99_apply_schema_file(Db $db, string $file): string
     return 'applied schema.sql';
 }
 
-function pw99_legacy_lift(Db $db): string
+function winston99_legacy_lift(Db $db): string
 {
     $pdo = $db->pdo();
     $pdo->exec('CREATE TABLE IF NOT EXISTS facilities (
@@ -269,11 +315,11 @@ function pw99_legacy_lift(Db $db): string
     } catch (PDOException $e) {
     }
 
-    pw99_apply_schema_file($db, dirname(__DIR__) . '/sql/schema.sql');
+    winston99_apply_schema_file($db, dirname(__DIR__) . '/sql/schema.sql');
     return 'legacy dump lifted into facility ' . $fid;
 }
 
-function pw99_ensure_superintendent(Db $db): string
+function winston99_ensure_superintendent(Db $db): string
 {
     if (!$db->tableExists('users') || !$db->columnExists('users', 'type')) {
         return '';
@@ -293,7 +339,7 @@ function pw99_ensure_superintendent(Db $db): string
     return 'promoted user ' . $aid . ' to superintendent';
 }
 
-function pw99_soften_legacy_notnull(Db $db): string
+function winston99_soften_legacy_notnull(Db $db): string
 {
     $pdo = $db->pdo();
     $did = [];
@@ -318,7 +364,7 @@ function pw99_soften_legacy_notnull(Db $db): string
 }
 
 /** Columns the rewrite needs. Runs every update so a leftover mysqli dump cannot 500 the home page. */
-function pw99_ensure_rewrite_columns(Db $db): string
+function winston99_ensure_rewrite_columns(Db $db): string
 {
     if (!$db->tableExists('users')) {
         return '';

@@ -189,7 +189,7 @@
     window.addEventListener('message', function (ev) {
       if (ev.origin !== window.location.origin) return;
       var d = ev.data;
-      if (!d || !d.pw99oauth) return;
+      if (!d || !d.winston99oauth) return;
       if (d.ok) pwOauthSetRow(table, d.provider, true);
     });
     table.addEventListener('click', function (ev) {
@@ -205,7 +205,7 @@
         var top = window.screenY + Math.max(0, (window.outerHeight - h) / 2);
         window.open(
           'oauth.php?p=' + encodeURIComponent(p) + '&link=1&popup=1',
-          'pw99oauth',
+          'winston99oauth',
           'popup=yes,width=' + w + ',height=' + h + ',left=' + left + ',top=' + top
         );
         return;
@@ -484,11 +484,11 @@
   });
 
   function pwThemeLive() {
-    var form = document.getElementById('pw-theme-form');
+    var form = document.getElementById('winston99-theme-form');
     if (!form) return;
     var saved = form.getAttribute('data-saved') || '';
-    var link = document.getElementById('pw-theme-css');
-    var keep = document.getElementById('pw-theme-keep');
+    var link = document.getElementById('winston99-theme-css');
+    var keep = document.getElementById('winston99-theme-keep');
     function apply() {
       var sel = form.querySelector('input[name=theme]:checked');
       var id = sel ? sel.value : saved;
@@ -496,7 +496,7 @@
         if (!link) {
           link = document.createElement('link');
           link.rel = 'stylesheet';
-          link.id = 'pw-theme-css';
+          link.id = 'winston99-theme-css';
           link.type = 'text/css';
           document.head.appendChild(link);
         }

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Pull the configured stream (config.php) and run SQL migrations. Keeps config.php.
-#   bash bin/pw99-update
+#   bash bin/update
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 exec php "$ROOT/bin/update.php"

@@ -1,8 +1,8 @@
-CREATE DATABASE pw99db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-GRANT ALL PRIVILEGES ON pw99db.* TO 'pw99db'@'localhost' IDENTIFIED BY 'pw99dbpassword';
+CREATE DATABASE winston99db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+GRANT ALL PRIVILEGES ON winston99db.* TO 'winston99db'@'localhost' IDENTIFIED BY 'winston99dbpassword';
 FLUSH PRIVILEGES;
 
-USE pw99db;
+USE winston99db;
 
 CREATE TABLE IF NOT EXISTS `users` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -168,8 +168,8 @@ CREATE TABLE IF NOT EXISTS `group_members` (
 
 -- Dev cheatsheet
 -- UPDATE users SET groups='[""]' WHERE groups IS NULL;
--- ALTER TABLE `pw99db`.`clickathon` ADD `time_epoch`  INT UNSIGNED NOT NULL;
-ALTER TABLE `pw99db`.`clickathon` ADD `unlocked` TIMESTAMP NULL DEFAULT NULL;
+-- ALTER TABLE `winston99db`.`clickathon` ADD `time_epoch`  INT UNSIGNED NOT NULL;
+ALTER TABLE `winston99db`.`clickathon` ADD `unlocked` TIMESTAMP NULL DEFAULT NULL;
 
 -- Select my observees
 -- SELECT id FROM users w WHERE EXISTS (SELECT 1 FROM users u WHERE JSON_CONTAINS(u.observing, CONCAT('\"', w.id, '\"')) AND u.id = '$userid');
