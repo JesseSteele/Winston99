@@ -96,6 +96,9 @@ final class Update
                 }
             } else {
                 copy($item->getPathname(), $dest);
+                if (is_executable($item->getPathname())) {
+                    @chmod($dest, 0755);
+                }
             }
         }
     }
