@@ -15,7 +15,7 @@ $popupDone = static function (bool $ok, string $provider, string $error = '') : 
         ['ok' => $ok, 'provider' => $provider, 'error' => $error],
         JSON_UNESCAPED_UNICODE
     );
-    echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>PinkWrite 99</title></head><body>';
+    echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Winston 99</title></head><body>';
     echo '<script>(function(){var d=' . $payload . ';';
     echo 'try{if(window.opener)window.opener.postMessage({pw99oauth:1,ok:!!d.ok,provider:d.provider,error:d.error||""},window.location.origin);}catch(e){}';
     echo 'window.close();})();</script>';

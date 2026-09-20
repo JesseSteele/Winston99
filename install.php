@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['install'])) {
     $db_port = (int) ($_POST['db_port'] ?? 3306);
     $host = trim((string) ($_POST['host'] ?? ''), '/');
     $host = preg_replace('#^https?://#i', '', $host) ?? $host;
-    $site = trim((string) ($_POST['site_title'] ?? 'PinkWrite 99'));
+    $site = trim((string) ($_POST['site_title'] ?? 'Winston 99'));
     $mail_from = trim((string) ($_POST['mail_from'] ?? ''));
     $username = (string) ($_POST['username'] ?? '');
     $email = (string) ($_POST['email'] ?? '');
@@ -80,19 +80,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['install'])) {
             'configured' => true,
             'allow_create_super' => false,
             'host' => '',
-            'site_title' => 'PinkWrite 99',
+            'site_title' => 'Winston 99',
             'db' => [],
             'mail' => [
                 'transport' => 'mail',
                 'from' => '',
-                'from_name' => 'PinkWrite 99',
+                'from_name' => 'Winston 99',
                 'smtp_host' => '127.0.0.1',
                 'smtp_port' => 587,
                 'smtp_user' => '',
                 'smtp_pass' => '',
                 'smtp_secure' => 'tls',
             ],
-            'github' => 'https://github.com/PinkWrite/99.git',
+            'github' => 'https://github.com/JesseSteele/Winston99.git',
             'stream' => 'main',
             'oauth' => [
                 'google' => ['id' => '', 'secret' => ''],
@@ -179,11 +179,11 @@ if (!function_exists('h')) {
 }
 
 ?><!DOCTYPE html>
-<html><head><meta charset="utf-8"><title>Install PinkWrite 99</title>
+<html><head><meta charset="utf-8"><title>Install Winston 99</title>
 <link rel="stylesheet" href="css/styles.css?v=<?php echo h(function_exists('pw99_asset_v') ? pw99_asset_v(__DIR__ . '/css/styles.css') : (string) time()); ?>">
 <link rel="stylesheet" href="css/theme-dusk-desk.css?v=<?php echo h(function_exists('pw99_asset_v') ? pw99_asset_v(__DIR__ . '/css/theme-dusk-desk.css') : (string) time()); ?>">
 </head><body><div id="wrap"><div class="page"><div class="content">
-<h1 class="sans">Install PinkWrite 99</h1>
+<h1 class="sans">Install Winston 99</h1>
 <p class="sans">SysAdmin only. Mail, host, and database live in <code>config.php</code>.</p>
 <?php
 foreach ($errors as $e) {
@@ -206,7 +206,7 @@ if ($alreadyInstalled && !$notice) {
         echo '<h3 class="sans">Public host</h3>';
         echo '<p>No http:// — examples: <code>write.pink</code>, <code>99.example.org</code>, <code>example.org/99</code>. Always served as https://</p>';
         echo '<p><input name="host" placeholder="write.pink/99" value="' . h((string) ($app->config['host'] ?? '')) . '" required></p>';
-        echo '<p>Site title <input name="site_title" value="' . h((string) ($app->config['site_title'] ?? 'PinkWrite 99')) . '"></p>';
+        echo '<p>Site title <input name="site_title" value="' . h((string) ($app->config['site_title'] ?? 'Winston 99')) . '"></p>';
         echo '<p>Mail from <input name="mail_from" placeholder="noreply@write.pink" value="' . h((string) ($app->config['mail']['from'] ?? '')) . '"> (SMTP later in config)</p>';
         echo '<h3 class="sans">Sign-in keys (optional)</h3>';
         echo '<p>Leave a pair blank to hide that button. Keys go in <code>config.php</code> only — not the database, and not editable in the app later. SysAdmin can add or change them in the config file. Callback for both: <code>https://</code><em>host</em><code>/oauth.php</code></p>';
@@ -227,6 +227,6 @@ if ($alreadyInstalled && !$notice) {
 ?>
 </div>
 <div class="footer">
-<p class="dk sans"><a class="dk" href="Terms.htm">Terms & Conditions</a> | <a class="dk" href="Privacy.htm">Privacy</a> | <a class="dk" href="https://github.com/PinkWrite/99">OpenSource project from GitHub</a> | <a class="dk" href="https://pinkwrite.com">pinkwrite.com</a> &nbsp; - &nbsp; &copy; PinkWrite, <a class="dk" href="https://www.gnu.org/licenses/gpl-3.0.en.html">GPLv3</a></p>
+<p class="dk sans"><a class="dk" href="Terms.htm">Terms & Conditions</a> | <a class="dk" href="Privacy.htm">Privacy</a> | <a class="dk" href="https://github.com/JesseSteele/Winston99">OpenSource project from GitHub</a> | <a class="dk" href="https://winston.software">winston.software</a> &nbsp; - &nbsp; &copy; Winston, <a class="dk" href="https://www.gnu.org/licenses/gpl-3.0.en.html">GPLv3</a></p>
 </div>
 </div></div></body></html>

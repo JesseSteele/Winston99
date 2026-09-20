@@ -1,4 +1,4 @@
-/* PinkWrite 99 — save, wordcount, no-paste, passkeys */
+/* Winston 99 — save, wordcount, no-paste, passkeys */
 (function () {
   window.showBulkActions = function () {
     var bar = document.getElementById('bulk_actions_div');

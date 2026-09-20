@@ -23,7 +23,7 @@ final class Update
 
     private function pull(string $root): string
     {
-        $repo = (string) ($this->app->config['github'] ?? 'https://github.com/PinkWrite/99.git');
+        $repo = (string) ($this->app->config['github'] ?? 'https://github.com/JesseSteele/Winston99.git');
         $branch = $this->stream();
         if (is_dir($root . '/.git')) {
             $git = 'git -C ' . escapeshellarg($root);

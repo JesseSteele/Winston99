@@ -1,10 +1,10 @@
-# PinkWrite 99 install
+# Winston 99 install
 
 ## Requirements
 Linux, Apache (or nginx), PHP 8, MariaDB. Same class of host as WordPress.
 
 ## Steps
-1. `git clone https://github.com/PinkWrite/99.git` into the web folder.
+1. `git clone https://github.com/JesseSteele/Winston99.git` into the web folder.
 2. Create a database and user.
 3. Visit `install.php`.
    - DB host: `127.0.0.1` (not `localhost`)
@@ -12,7 +12,7 @@ Linux, Apache (or nginx), PHP 8, MariaDB. Same class of host as WordPress.
 4. Log in as the Superintendent. Create a Facility, then an Administrator.
 
 ## Packages
-Arch/Debian/RPM builders live in [99-package](https://github.com/PinkWrite/99-package). Same installer: `contrib/pw99-install`. `--webroot` sets destination; interactive does not ask for it. Verb uses `ink install pw99 -d domain.tld`.
+Arch/Debian/RPM builders live in [99-package](https://github.com/PinkWrite/99-package). Same installer: `contrib/pw99-install`. `--webroot` sets destination; interactive does not ask for it. Verb uses `ink install winston99 -d domain.tld`.
 
 ## Mail
 Edit `config.php` (`mail` key). SMTP password lives there on purpose. This is SysAdmin work.
@@ -24,7 +24,7 @@ php bin/update.php
 or Superintendent / Admin locker **Update app**. Never overwrites `config.php`.
 
 ## Old dump
-Do **not** run `install.php` on a live old database. The hand SQL lives on the [legacy branch](https://github.com/PinkWrite/99/blob/legacy/README.md) as `sql/legacy-lift.sql`. Import the dump into an empty database, copy `config.sample.php` to `config.php` (`db.host` `127.0.0.1`), then `php bin/update.php`.
+Do **not** run `install.php` on a live old database. The hand SQL lives on the [legacy branch](https://github.com/JesseSteele/Winston99/blob/legacy/README.md) as `sql/legacy-lift.sql`. Import the dump into an empty database, copy `config.sample.php` to `config.php` (`db.host` `127.0.0.1`), then `php bin/update.php`.
 
 ## Nginx
 ```

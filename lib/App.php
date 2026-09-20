@@ -174,7 +174,7 @@ final class App
 
     public function title(): string
     {
-        return (string) ($this->config['site_title'] ?? 'PinkWrite 99');
+        return (string) ($this->config['site_title'] ?? 'Winston 99');
     }
 
     /** Host setting is scheme-less. Always https. */

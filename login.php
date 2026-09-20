@@ -69,10 +69,10 @@ if (!empty($_SESSION['logout'])) {
 }
 echo '<table style="clear:both;float:left;display:block;position:relative;width:auto;" class="plain"><tbody><tr>';
 echo '<td><span class="sans dk"><a href="88">Typing practice: 88 Word Hanon</a></span></td>';
-echo '<td><span class="sans dk"><a href="https://github.com/PinkWrite/99">GitHub Source</a></span></td>';
+echo '<td><span class="sans dk"><a href="https://github.com/JesseSteele/Winston99">GitHub Source</a></span></td>';
 echo '</tr></tbody></table>';
 echo '<h1 style="clear:both;display:block;">' . h($app->title()) . '</h1>';
-echo '<p class="dk sans"><b>Typing and Editing for Learners and Teachers</b>, <a href="https://pinkwrite.com"><small><i>powered by PinkWrite 99</i></small></a></p>';
+echo '<p class="dk sans"><b>Typing and Editing for Learners and Teachers</b>, <a href="https://winston.software"><small><i>powered by Winston 99</i></small></a></p>';
 if ($err) {
     echo '<p class="sans noticered">' . h($err) . '</p>';
 }

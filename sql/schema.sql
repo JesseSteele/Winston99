@@ -1,4 +1,4 @@
--- PinkWrite 99 current schema. InnoDB + utf8mb4. Installer applies this.
+-- Winston 99 current schema. InnoDB + utf8mb4. Installer applies this.
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 

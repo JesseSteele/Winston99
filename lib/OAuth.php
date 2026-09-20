@@ -257,7 +257,7 @@ final class OAuth
             CURLOPT_HTTPHEADER => [
                 'Authorization: Bearer ' . $token,
                 'Accept: application/json',
-                'User-Agent: PinkWrite-99',
+                'User-Agent: Winston-99',
             ],
             CURLOPT_TIMEOUT => 20,
         ]);
