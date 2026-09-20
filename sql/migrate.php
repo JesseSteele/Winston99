@@ -145,6 +145,12 @@ function winston99_migrate(App $app): string
 function winston99_sweep_legacy(App $app): string
 {
     $notes = [];
+    foreach (['bin/update', 'bin/update.php'] as $rel) {
+        $p = $app->root . '/' . $rel;
+        if (is_file($p)) {
+            @chmod($p, 0755);
+        }
+    }
     foreach (['bin/pw99-update', 'js/pw99.js', 'contrib/pw99-install', 'dev/pw99-config.php'] as $rel) {
         $p = $app->root . '/' . $rel;
         if (is_file($p) && @unlink($p)) {
