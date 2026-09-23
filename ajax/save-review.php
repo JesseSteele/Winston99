@@ -15,6 +15,24 @@ if (!$w) {
     $app->json(['ok' => false, 'error' => 'not found'], 404);
 }
 $score = $_POST['score'] ?? '';
+$ds = (string) $w['draft_status'];
+$es = (string) $w['edits_status'];
+$peek = ($ds === 'saved' || $es === 'saved') && $ds !== 'submitted' && $es !== 'submitted';
+if ($peek) {
+    $app->writ->saveEdits($wid, [
+        'block_id' => (int) $w['block_id'],
+        'title' => (string) $w['title'],
+        'work' => (string) $w['work'],
+        'notes' => (string) $w['notes'],
+        'edits' => (string) $w['edits'],
+        'edits_wordcount' => (int) $w['edits_wordcount'],
+        'edit_notes' => clean_body($_POST['edit_notes'] ?? ''),
+        'scoring' => (string) $w['scoring'],
+        'score' => $w['score'],
+        'outof' => (int) ($w['outof'] ?: 100),
+    ]);
+    $app->json(['ok' => true, 'msg' => 'Editor notes saved.']);
+}
 $app->writ->saveEdits($wid, [
     'block_id' => (int) ($_POST['block'] ?? $w['block_id']),
     'title' => writ_title($_POST['title'] ?? $w['title'] ?? ''),

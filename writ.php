@@ -181,12 +181,12 @@ if ($reviewed) {
     echo '<p class="sans">Your correction</p>';
     echo '<textarea name="correction" id="writingArea" class="writingBox" rows="12" cols="82" spellcheck="false" onchange="onNavWarn()">' . h($w['correction']) . '</textarea>';
     echo '<input type="hidden" name="correction_wordcount" id="wordCountInput" value="0">';
-    echo '<p>' . confirm_submit('submit_correction', 'Submit final correction', 'Confirm') . '</p>';
+    echo '<p>' . confirm_writ('submit_correction', 'Submit final correction', 'Confirm') . '</p>';
 } else {
     echo '<textarea name="draft" id="writingArea" class="writingBox" rows="12" cols="82" spellcheck="false" autocapitalize="none" onchange="onNavWarn()" placeholder="Draft contents...">' . h($w['draft']) . '</textarea>';
     echo '<input type="hidden" name="draft_wordcount" id="wordCountInput" value="0">';
     echo '<input type="hidden" name="save_draft" value="1">';
-    echo '<p>' . confirm_submit('submit_draft', 'Submit draft', 'Confirm') . '</p>';
+    echo '<p>' . confirm_writ('submit_draft', 'Submit draft', 'Confirm') . '</p>';
 }
 echo '<p class="sans">Notes<br><textarea name="notes" rows="4" cols="82" onchange="onNavWarn()">' . h($w['notes']) . '</textarea></p>';
 echo '</form>';

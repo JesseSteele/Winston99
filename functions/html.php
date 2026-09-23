@@ -207,15 +207,24 @@ function confirm_submit(
     string $confirmLabel,
     ?string $value = null,
     string $goClass = 'dk_sub_button',
-    string $yesClass = 'ln_button'
+    string $yesClass = 'ln_button',
+    string $cancelClass = ''
 ): string {
     $val = $value ?? $confirmLabel;
-    $cancelClass = preg_match('/\bsmall\b/', $goClass) ? 'act_ltgray small' : 'dk_sub_button';
+    if ($cancelClass === '') {
+        $cancelClass = preg_match('/\bsmall\b/', $goClass) ? 'act_ltgray small' : 'dk_sub_button';
+    }
     return '<span class="pw-confirm-wrap">'
         . '<button type="button" class="' . h($goClass) . ' pw-confirm-go">' . h($firstLabel) . '</button>'
         . '<button type="button" class="' . h($cancelClass) . ' pw-confirm-cancel" hidden>Cancel</button>'
         . '<button type="submit" name="' . h($name) . '" value="' . h($val) . '" class="' . h($yesClass) . ' pw-confirm-yes" hidden disabled>' . h($confirmLabel) . '</button>'
         . '</span>';
+}
+
+/** Writ, assignment, and test double-confirm only: red Cancel, green Confirm. */
+function confirm_writ(string $name, string $firstLabel, string $confirmLabel, ?string $value = null): string
+{
+    return confirm_submit($name, $firstLabel, $confirmLabel, $value, 'dk_sub_button', 'act_green', 'act_red');
 }
 
 /**

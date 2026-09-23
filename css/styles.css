@@ -820,8 +820,14 @@ button.small:hover {
   background-color: #731a15;
 }
 
-.act_red:hover {
+.act_red:hover,
+button.act_red:hover {
   background-color: #f71771;
+}
+
+button.act_red {
+  color: #ccc;
+  background-color: #731a15;
 }
 
 .act_orange {
@@ -838,8 +844,14 @@ button.small:hover {
   background-color: #51700e;
 }
 
-.act_green:hover {
+.act_green:hover,
+button.act_green:hover {
   background-color: #f71771;
+}
+
+button.act_green {
+  color: #ccc;
+  background-color: #51700e;
 }
 
 .act_blue {
