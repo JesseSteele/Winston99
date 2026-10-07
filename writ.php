@@ -188,7 +188,7 @@ if ($reviewed) {
     echo '<input type="hidden" name="save_draft" value="1">';
     echo '<p>' . confirm_writ('submit_draft', 'Submit draft', 'Confirm') . '</p>';
 }
-echo '<p class="sans">Notes</p><textarea name="notes" rows="4" cols="82" onchange="onNavWarn()">' . h($w['notes']) . '</textarea>';
+echo '<p class="sans">Notes</p><textarea name="notes" class="writingBox" rows="4" onchange="onNavWarn()">' . h($w['notes']) . '</textarea>';
 echo '</form>';
 echo comments_markup($app->writ->comments($wid), $wid, false, $uid, $app->csrf->token());
 echo '<script>pwWord("writingArea","wordCount","wordCountInput");pwNoPaste("writingArea");pwBindSave("editform","ajax/save-writ.php","ajax_changes");</script>';

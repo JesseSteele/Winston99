@@ -75,7 +75,7 @@ if ($peek) {
     }
     echo '<input type="hidden" name="peek" value="1">';
     echo '<p class="sans">Editor notes</p>';
-    echo '<textarea name="edit_notes" rows="4" cols="82" onchange="onNavWarn()">' . h($w['edit_notes']) . '</textarea>';
+    echo '<textarea name="edit_notes" class="writingBox" rows="4" onchange="onNavWarn()">' . h($w['edit_notes']) . '</textarea>';
     echo '<p class="save-row"><button type="button" class="lt_button" title="Save (Ctrl + S)" onclick="pwAjaxForm(\'editsform\',\'ajax/save-review.php\',\'ajax_changes\');offNavWarn();">Save</button> ';
     echo '<span id="ajax_changes"></span></p>';
     echo '</form>';
@@ -95,16 +95,16 @@ echo '<span id="ajax_changes"></span></p>';
 echo '<p class="sans">Editor revision</p>';
 echo '<textarea name="edits" id="writingArea" class="writingBox" rows="12" cols="82" onchange="onNavWarn()">' . h($w['edits'] ?: $w['draft']) . '</textarea>';
 echo '<p class="sans">Edit notes</p>';
-echo '<textarea name="edit_notes" rows="4" cols="82">' . h($w['edit_notes']) . '</textarea>';
+echo '<textarea name="edit_notes" class="writingBox" rows="4">' . h($w['edit_notes']) . '</textarea>';
 echo '<p class="sans">Scoring remarks</p>';
-echo '<textarea name="scoring" rows="3" cols="82">' . h($w['scoring']) . '</textarea>';
+echo '<textarea name="scoring" class="writingBox" rows="3">' . h($w['scoring']) . '</textarea>';
 echo '<p class="sans">Score</p>';
 echo '<input name="score" type="number" min="0" max="1000" value="' . h((string) $w['score']) . '"> / <input name="outof" type="number" value="' . h((string) ($w['outof'] ?: 100)) . '">';
 echo '<p class="pw-confirm-row">' . confirm_writ('submit_edits', 'Submit edits', 'Confirm submit edits');
 echo confirm_writ('submit_redraft', 'Redraft', 'Confirm redraft');
 echo confirm_writ('submit_scoring', 'Submit score', 'Confirm score') . '</p>';
 echo '<p class="sans">Notes</p>';
-echo '<textarea name="notes" rows="3" cols="82">' . h($w['notes']) . '</textarea>';
+echo '<textarea name="notes" class="writingBox" rows="3">' . h($w['notes']) . '</textarea>';
 echo '<input type="hidden" name="save_edit" value="1">';
 echo '</form>';
 echo comments_markup($app->writ->comments($wid), $wid, false, $app->auth->id(), $app->csrf->token());

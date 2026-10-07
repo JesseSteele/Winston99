@@ -366,6 +366,16 @@ border: none;
 width:99%;
 outline:none;
 padding:3px 3px 3px 8px;
+box-sizing: border-box;
+}
+
+textarea.writingBox,
+textarea.writingBox:focus {
+  display: block;
+  width: 99%;
+  max-width: 100%;
+  resize: vertical;
+  outline: none;
 }
 
 #saveName {
