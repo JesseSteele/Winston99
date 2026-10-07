@@ -741,6 +741,7 @@ final class WritList
     /** @param list<int> $writerIds */
     private function writTable(string $whereAmI, string $mode, string $status, ?int $writerId, ?int $editorId, array $writerIds = [], string $kind = ''): void
     {
+        $this->app->writ->repairStatuses();
         $st = $this->listState($whereAmI, ['activity', 'creation', 'work', 'title', 'status'], 'activity');
         $filterWriter = (int) ($_GET['u'] ?? $_GET['o'] ?? 0);
         $filterBlock = (int) ($_GET['v'] ?? 0);
@@ -1022,7 +1023,10 @@ final class WritList
         if ($ds === 'reviewed' && $es === 'submitted') {
             return get_switch('Finish', 'Open for review', 'review.php', 'w', $id, 'set_writ_green');
         }
-        if ($ds === 'saved' || $es === 'saved') {
+        if ($es === 'scored') {
+            return get_switch('Scored', 'Recheck scoring', 'review.php', 'w', $id, 'set_writ_blue');
+        }
+        if ($this->app->writ->isPeek($w)) {
             return get_switch('Peek', 'Preview current progress', 'review.php', 'w', $id, 'set_writ_gray');
         }
         if ($ds === 'reviewed' && $es === 'drafting') {
@@ -1031,10 +1035,10 @@ final class WritList
         if ($ds === 'reviewed' && $es === 'viewed') {
             return get_switch('View', 'Review current progress', 'review.php', 'w', $id, 'set_writ_gray');
         }
-        if ($ds === 'reviewed' || $es === 'scored') {
+        if ($ds === 'reviewed') {
             return get_switch('Scored', 'Recheck scoring', 'review.php', 'w', $id, 'set_writ_blue');
         }
-        return '';
+        return dead_switch('Held', 'This status has no open action', 'set_writ_gray');
     }
 
     /** @param array<string,array{0:string,1:string}> $sorts */

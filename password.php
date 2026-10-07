@@ -77,7 +77,7 @@ if (!$noPass) {
 }
 echo '<p class="sans">New</p>' . $form->input('pass1', 'password', 'required' . $off);
 echo '<p class="sans">Confirm</p>' . $form->input('pass2', 'password', 'required' . $off);
-echo '<p><input type="submit" class="lt_button" value="' . ($noPass ? 'Set password' : 'Change password') . '"'
+echo '<p><input type="submit" class="lt_button' . ($off !== '' ? ' btn-dormant' : '') . '" value="' . ($noPass ? 'Set password' : 'Change password') . '"'
     . $off . '></p></form>';
 echo '<script>
 (function(){
@@ -89,6 +89,7 @@ echo '<script>
     var on = cb.checked;
     form.classList.toggle("pw-off", on);
     Array.prototype.forEach.call(form.querySelectorAll("input"), function (i) {
+      if (i.type === "submit") i.classList.toggle("btn-dormant", on);
       if (i.type === "hidden") return;
       i.disabled = on;
     });

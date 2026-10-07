@@ -30,7 +30,7 @@ $fields = function () use ($w): array {
 
 $ds = (string) $w['draft_status'];
 $es = (string) $w['edits_status'];
-$peek = ($ds === 'saved' || $es === 'saved') && $ds !== 'submitted' && $es !== 'submitted';
+$peek = $app->writ->isPeek($w);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $app->csrf->check() && !$peek) {
     $f = $fields();
@@ -102,7 +102,7 @@ echo '<p class="sans">Score</p>';
 echo '<input name="score" type="number" min="0" max="1000" value="' . h((string) $w['score']) . '"> / <input name="outof" type="number" value="' . h((string) ($w['outof'] ?: 100)) . '">';
 echo '<p class="pw-confirm-row">' . confirm_writ('submit_edits', 'Submit edits', 'Confirm submit edits');
 echo confirm_writ('submit_redraft', 'Redraft', 'Confirm redraft');
-echo confirm_writ('submit_scoring', 'Submit score', 'Confirm score') . '</p>';
+echo confirm_writ('submit_scoring', 'Score now', 'Confirm score') . '</p>';
 echo '<p class="sans">Notes</p>';
 echo '<textarea name="notes" class="writingBox" rows="3">' . h($w['notes']) . '</textarea>';
 echo '<input type="hidden" name="save_edit" value="1">';

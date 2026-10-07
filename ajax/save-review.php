@@ -15,9 +15,7 @@ if (!$w) {
     $app->json(['ok' => false, 'error' => 'not found'], 404);
 }
 $score = $_POST['score'] ?? '';
-$ds = (string) $w['draft_status'];
-$es = (string) $w['edits_status'];
-$peek = ($ds === 'saved' || $es === 'saved') && $ds !== 'submitted' && $es !== 'submitted';
+$peek = $app->writ->isPeek($w);
 if ($peek) {
     $app->writ->saveEdits($wid, [
         'block_id' => (int) $w['block_id'],

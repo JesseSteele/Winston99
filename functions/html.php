@@ -188,7 +188,7 @@ function get_switch(string $text, string $title, string $action, string $name, s
 function dead_switch(string $text, string $title, string $class): string
 {
     return '<form action="#" method="post" style="display:inline">'
-        . '<input type="submit" title="' . h($title) . '" value="' . h($text) . '" class="' . h($class) . '" disabled="disabled">'
+        . '<input type="submit" title="' . h($title) . '" value="' . h($text) . '" class="' . h(trim($class . ' btn-dormant')) . '" disabled="disabled">'
         . '</form>';
 }
 
@@ -197,7 +197,7 @@ function history_button(bool $hasHistory, string $href): string
     if ($hasHistory) {
         return button('Show history', 'Open draft and redraft history', $href, 'lt_button');
     }
-    return '<button type="button" class="act_disabled" disabled title="No redraft history">no history</button>';
+    return '<button type="button" class="act_disabled btn-dormant" disabled title="No redraft history">no history</button>';
 }
 
 /** First click reveals Cancel + Confirm over a page-dimming overlay. */

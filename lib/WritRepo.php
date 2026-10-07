@@ -208,6 +208,37 @@ final class WritRepo
         );
     }
 
+    /** Writer has not handed the current stage back to the editor. */
+    public function isPeek(array $w): bool
+    {
+        $ds = (string) ($w['draft_status'] ?? '');
+        $es = (string) ($w['edits_status'] ?? '');
+        if ($ds === 'submitted' || $es === 'submitted' || $es === 'scored') {
+            return false;
+        }
+        return $ds === 'saved' || $ds === 'redraft' || $es === 'saved';
+    }
+
+    /**
+     * Heal pairs the workflow cannot produce.
+     * redraft+drafting is valid (sent back, writer has not saved yet) and is left alone.
+     */
+    public function repairStatuses(): void
+    {
+        $this->app->db->run(
+            "UPDATE writs SET draft_status='submitted'
+             WHERE draft_status IN ('saved','redraft') AND edits_status='submitted'"
+        );
+        $this->app->db->run(
+            "UPDATE writs SET draft_status='reviewed'
+             WHERE draft_status IN ('saved','redraft','submitted') AND edits_status='scored'"
+        );
+        $this->app->db->run(
+            "UPDATE writs SET edits_status='drafting'
+             WHERE draft_status='redraft' AND edits_status NOT IN ('drafting','saved','submitted','scored')"
+        );
+    }
+
     public function comments(int $writId): array
     {
         if (!$this->app->db->tableExists('writ_comments')) {

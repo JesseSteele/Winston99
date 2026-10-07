@@ -882,6 +882,25 @@ button.act_green {
   color: #f71771;
 }
 
+/* Dormant controls keep their own fill. Only the label fades into it. */
+.btn-dormant,
+.btn-dormant:hover,
+.btn-dormant:disabled,
+button.btn-dormant,
+button.btn-dormant:hover,
+button.act_disabled.btn-dormant,
+button.act_disabled.btn-dormant:hover,
+input.btn-dormant,
+input.btn-dormant:hover,
+input.btn-dormant:disabled,
+form input.btn-dormant,
+form input.set_writ_disabled.btn-dormant,
+form input.set_writ_disabled.btn-dormant:hover,
+form input.lt_button.btn-dormant,
+form input.lt_button.btn-dormant:hover {
+  color: rgb(204 204 204 / 32%);
+}
+
 input.small:hover,
 button.small:hover {
   background-color: #f71771;

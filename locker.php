@@ -60,7 +60,7 @@ foreach (winston99_themes() as $tid => $tname) {
     $ck = $curTheme === $tid ? ' checked' : '';
     echo '<p class="field"><label><input type="radio" name="theme" value="' . h($tid) . '"' . $ck . '> ' . h($tname) . '</label></p>';
 }
-echo '<p><input type="submit" id="winston99-theme-keep" class="set_writ_disabled" value="Keep theme" disabled></p></form>';
+echo '<p><input type="submit" id="winston99-theme-keep" class="lt_button btn-dormant" value="Keep theme" disabled></p></form>';
 echo '<p>' . button('Password', 'Change password', 'password.php', 'set_gray') . '</p>';
 echo '<p>' . button('Security', '2FA and passkeys', 'security.php', 'set_gray') . '</p>';
 echo '<p>' . button('Notification settings', 'In-app and email', 'notify-settings.php', 'set_gray') . '</p>';
