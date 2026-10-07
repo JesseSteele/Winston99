@@ -161,9 +161,9 @@ $workShow = (string) $w['work'];
 if ($workShow === '' || $workShow === 'task-' . $wid) {
     $workShow = '';
 }
-echo '<p class="sans">Work<br><input name="work" id="work" class="readBox" maxlength="122" value="' . h($workShow) . '" placeholder="task-' . (int) $wid . '" onchange="onNavWarn()"></p>';
+echo '<p class="sans">Work</p><input name="work" id="work" class="readBox" maxlength="122" value="' . h($workShow) . '" placeholder="task-' . (int) $wid . '" onchange="onNavWarn()">';
 $titleShow = ((string) $w['title'] === 'Untitled' || (string) $w['title'] === '') ? '' : (string) $w['title'];
-echo '<p class="sans">Title<br><input name="title" id="title" class="writingBox" maxlength="122" value="' . h($titleShow) . '" placeholder="Untitled" onchange="onNavWarn()"></p>';
+echo '<p class="sans">Title</p><input name="title" id="title" class="writingBox" maxlength="122" value="' . h($titleShow) . '" placeholder="Untitled" onchange="onNavWarn()">';
 if ($w['instructions']) {
     echo '<h4 class="review">Instructions</h4><section class="writcontent remarks">' . nl_text($w['instructions']) . '</section>';
 }
@@ -188,7 +188,7 @@ if ($reviewed) {
     echo '<input type="hidden" name="save_draft" value="1">';
     echo '<p>' . confirm_writ('submit_draft', 'Submit draft', 'Confirm') . '</p>';
 }
-echo '<p class="sans">Notes<br><textarea name="notes" rows="4" cols="82" onchange="onNavWarn()">' . h($w['notes']) . '</textarea></p>';
+echo '<p class="sans">Notes</p><textarea name="notes" rows="4" cols="82" onchange="onNavWarn()">' . h($w['notes']) . '</textarea>';
 echo '</form>';
 echo comments_markup($app->writ->comments($wid), $wid, false, $uid, $app->csrf->token());
 echo '<script>pwWord("writingArea","wordCount","wordCountInput");pwNoPaste("writingArea");pwBindSave("editform","ajax/save-writ.php","ajax_changes");</script>';

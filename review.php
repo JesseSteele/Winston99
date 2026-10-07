@@ -74,7 +74,8 @@ if ($peek) {
         echo '<h4 class="review">Writer notes</h4><section class="writcontent notes">' . nl_text($w['notes']) . '</section>';
     }
     echo '<input type="hidden" name="peek" value="1">';
-    echo '<p class="sans">Editor notes<br><textarea name="edit_notes" rows="4" cols="82" onchange="onNavWarn()">' . h($w['edit_notes']) . '</textarea></p>';
+    echo '<p class="sans">Editor notes</p>';
+    echo '<textarea name="edit_notes" rows="4" cols="82" onchange="onNavWarn()">' . h($w['edit_notes']) . '</textarea>';
     echo '<p class="save-row"><button type="button" class="lt_button" title="Save (Ctrl + S)" onclick="pwAjaxForm(\'editsform\',\'ajax/save-review.php\',\'ajax_changes\');offNavWarn();">Save</button> ';
     echo '<span id="ajax_changes"></span></p>';
     echo '</form>';
@@ -90,13 +91,16 @@ echo '<p class="save-row"><button type="button" class="lt_button" title="Save (C
 echo '<span id="ajax_changes"></span></p>';
 echo '<p class="sans">Editor revision</p>';
 echo '<textarea name="edits" id="writingArea" class="writingBox" rows="12" cols="82" onchange="onNavWarn()">' . h($w['edits'] ?: $w['draft']) . '</textarea>';
-echo '<p class="sans">Edit notes<br><textarea name="edit_notes" rows="4" cols="82">' . h($w['edit_notes']) . '</textarea></p>';
-echo '<p class="sans">Scoring remarks<br><textarea name="scoring" rows="3" cols="82">' . h($w['scoring']) . '</textarea></p>';
+echo '<p class="sans">Edit notes</p>';
+echo '<textarea name="edit_notes" rows="4" cols="82">' . h($w['edit_notes']) . '</textarea>';
+echo '<p class="sans">Scoring remarks</p>';
+echo '<textarea name="scoring" rows="3" cols="82">' . h($w['scoring']) . '</textarea>';
 echo '<p class="sans">Score <input name="score" type="number" min="0" max="1000" value="' . h((string) $w['score']) . '"> / <input name="outof" type="number" value="' . h((string) ($w['outof'] ?: 100)) . '"></p>';
 echo '<p class="pw-confirm-row">' . confirm_writ('submit_edits', 'Submit edits', 'Confirm submit edits');
 echo confirm_writ('submit_redraft', 'Redraft', 'Confirm redraft');
 echo confirm_writ('submit_scoring', 'Submit score', 'Confirm score') . '</p>';
-echo '<p class="sans">Notes<br><textarea name="notes" rows="3" cols="82">' . h($w['notes']) . '</textarea></p>';
+echo '<p class="sans">Notes</p>';
+echo '<textarea name="notes" rows="3" cols="82">' . h($w['notes']) . '</textarea>';
 echo '<input type="hidden" name="save_edit" value="1">';
 echo '</form>';
 echo comments_markup($app->writ->comments($wid), $wid, false, $app->auth->id(), $app->csrf->token());
