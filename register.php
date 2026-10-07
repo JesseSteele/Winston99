@@ -111,7 +111,7 @@ foreach ($allowed as $t) {
 if ($form->get('type') === '') {
     $form->put('type', $kind);
 }
-echo '<p class="sans">Type<br>' . $form->select('type', $typeOpts) . '</p>';
+echo '<p class="sans">Type</p>' . $form->select('type', $typeOpts);
 if ($kind === 'admin' && $app->auth->is('superintendent')) {
     $fopts = [];
     foreach ($app->facility->all() as $f) {
@@ -120,12 +120,12 @@ if ($kind === 'admin' && $app->auth->is('superintendent')) {
     if ($form->get('facility_id') === '') {
         $form->put('facility_id', (string) $fidIn);
     }
-    echo '<p class="sans">Facility<br>' . $form->select('facility_id', $fopts, 'None') . '</p>';
+    echo '<p class="sans">Facility</p>' . $form->select('facility_id', $fopts, 'None');
 }
-echo '<p class="sans">Name<br>' . $form->input('name', 'text', 'required') . '</p>';
-echo '<p class="sans">Username<br>' . $form->input('username', 'text', 'required') . '</p>';
-echo '<p class="sans">Email<br>' . $form->input('email', 'email', 'required') . '</p>';
-echo '<p class="sans">Password<br>' . $form->input('pass1', 'password', 'required') . '</p>';
-echo '<p class="sans">Confirm<br>' . $form->input('pass2', 'password', 'required') . '</p>';
+echo '<p class="sans">Name</p>' . $form->input('name', 'text', 'required');
+echo '<p class="sans">Username</p>' . $form->input('username', 'text', 'required');
+echo '<p class="sans">Email</p>' . $form->input('email', 'email', 'required');
+echo '<p class="sans">Password</p>' . $form->input('pass1', 'password', 'required');
+echo '<p class="sans">Confirm</p>' . $form->input('pass2', 'password', 'required');
 echo '<p><input type="submit" class="lt_button" value="Register"></p></form>';
 $app->view->end();

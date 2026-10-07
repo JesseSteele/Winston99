@@ -41,8 +41,8 @@ if ($ok) {
 } else {
     echo '<form method="post">' . $app->csrf->field();
     echo '<input type="hidden" name="t" value="' . h($token) . '">';
-    echo '<p class="sans">New password<br>' . $form->input('pass1', 'password', 'required') . '</p>';
-    echo '<p class="sans">Confirm<br>' . $form->input('pass2', 'password', 'required') . '</p>';
+    echo '<p class="sans">New password</p>' . $form->input('pass1', 'password', 'required');
+    echo '<p class="sans">Confirm</p>' . $form->input('pass2', 'password', 'required');
     echo '<p><input type="submit" class="lt_button" value="Set password"></p></form>';
 }
 $app->view->end();

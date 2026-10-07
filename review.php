@@ -84,7 +84,10 @@ if ($peek) {
     exit;
 }
 
-echo '<p class="sans">Work <input name="work" value="' . h($w['work']) . '"> Title <input name="title" value="' . h($w['title']) . '"></p>';
+echo '<p class="sans">Work</p>';
+echo '<input name="work" value="' . h($w['work']) . '">';
+echo '<p class="sans">Title</p>';
+echo '<input name="title" value="' . h($w['title']) . '">';
 echo '<h4 class="review">Writer draft</h4><section class="writcontent draft">' . nl_text($w['draft']) . '</section>';
 echo '<p class="sans">Word count: ' . (int) $w['draft_wordcount'] . '</p>';
 echo '<p class="save-row"><button type="button" class="lt_button" title="Save (Ctrl + S)" onclick="pwAjaxForm(\'editsform\',\'ajax/save-review.php\',\'ajax_changes\');offNavWarn();">Save</button> ';
@@ -95,7 +98,8 @@ echo '<p class="sans">Edit notes</p>';
 echo '<textarea name="edit_notes" rows="4" cols="82">' . h($w['edit_notes']) . '</textarea>';
 echo '<p class="sans">Scoring remarks</p>';
 echo '<textarea name="scoring" rows="3" cols="82">' . h($w['scoring']) . '</textarea>';
-echo '<p class="sans">Score <input name="score" type="number" min="0" max="1000" value="' . h((string) $w['score']) . '"> / <input name="outof" type="number" value="' . h((string) ($w['outof'] ?: 100)) . '"></p>';
+echo '<p class="sans">Score</p>';
+echo '<input name="score" type="number" min="0" max="1000" value="' . h((string) $w['score']) . '"> / <input name="outof" type="number" value="' . h((string) ($w['outof'] ?: 100)) . '">';
 echo '<p class="pw-confirm-row">' . confirm_writ('submit_edits', 'Submit edits', 'Confirm submit edits');
 echo confirm_writ('submit_redraft', 'Redraft', 'Confirm redraft');
 echo confirm_writ('submit_scoring', 'Submit score', 'Confirm score') . '</p>';

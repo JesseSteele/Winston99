@@ -1557,10 +1557,9 @@ p.field {
   margin: 0.7em 0;
   font-family: Verdana, Arial, Helvetica, sans-serif;
 }
-p.field label {
+p.field > label:not(:has(input)):not(:has(select)):not(:has(textarea)) {
   display: block;
-  margin-bottom: 0.25em;
-  font-family: Verdana, Arial, Helvetica, sans-serif;
+  margin-bottom: 1em;
 }
 p.field input[type="text"],
 p.field input[type="email"],

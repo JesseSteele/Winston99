@@ -37,7 +37,7 @@ if ($msg) {
 }
 echo '<p class="sans dk">Administrators and below can reset by email. Superintendent requires the SysAdmin in the room.</p>';
 echo '<form method="post">' . $app->csrf->field();
-echo '<p class="sans">Email<br>' . $form->input('email', 'email', 'required') . '</p>';
+echo '<p class="sans">Email</p>' . $form->input('email', 'email', 'required');
 echo '<p><input type="submit" class="lt_button" value="Send reset link"></p></form>';
 echo '<p>' . button('Login', 'Login', 'login.php', 'set_gray') . '</p>';
 $app->view->end();

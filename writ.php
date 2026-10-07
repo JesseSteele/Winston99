@@ -150,13 +150,13 @@ if (!$owner) {
 echo '<form id="editform" method="post" onsubmit="offNavWarn();">' . $app->csrf->field();
 echo '<input type="hidden" name="writ_id" value="' . (int) $wid . '">';
 echo '<input type="hidden" name="user_form" value="' . (int) $uid . '">';
-echo '<p class="sans"><label>Block: <select class="formselect small" name="block" id="block" onchange="onNavWarn()">';
+echo '<p class="sans">Block</p><select class="formselect small" name="block" id="block" onchange="onNavWarn()">';
 echo '<option value="0">Main</option>';
 foreach ($blocks as $b) {
     $sel = ((int) $w['block_id'] === (int) $b['id']) ? ' selected' : '';
     echo '<option value="' . (int) $b['id'] . '"' . $sel . '>' . h($app->block->named($b)) . '</option>';
 }
-echo '</select></label></p>';
+echo '</select>';
 $workShow = (string) $w['work'];
 if ($workShow === '' || $workShow === 'task-' . $wid) {
     $workShow = '';
