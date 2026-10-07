@@ -88,16 +88,16 @@ echo '<p class="sans dk">' . h($w['username']) . ' · ' . h($type) . '</p>';
 echo '<form method="post" class="sans">' . $app->csrf->field();
 echo '<input type="hidden" name="u" value="' . $id . '">';
 echo '<input type="hidden" name="save_contact" value="1">';
-echo '<p class="field">Name<br>' . $contact->input('name', 'text', 'maxlength="80" required', 'readBox') . '</p>';
-echo '<p class="field">Email<br>' . $contact->input('email', 'email', 'maxlength="120" required', 'readBox') . '</p>';
+echo '<p class="field">Name</p>' . $contact->input('name', 'text', 'maxlength="80" required', 'readBox');
+echo '<p class="field">Email</p>' . $contact->input('email', 'email', 'maxlength="120" required', 'readBox');
 echo '<p><input type="submit" class="lt_button" value="Save"></p></form>';
 
 echo '<h3 class="lt">Password</h3>';
 echo '<p class="sans dk">Sets a new password for this account. Authenticator, if on, still blocks login until it is removed.</p>';
 echo '<form method="post" class="sans">' . $app->csrf->field();
 echo '<input type="hidden" name="u" value="' . $id . '">';
-echo '<p class="field">New<br>' . $passForm->input('pass1', 'password', 'required') . '</p>';
-echo '<p class="field">Confirm<br>' . $passForm->input('pass2', 'password', 'required') . '</p>';
+echo '<p class="field">New</p>' . $passForm->input('pass1', 'password', 'required');
+echo '<p class="field">Confirm</p>' . $passForm->input('pass2', 'password', 'required');
 echo '<p><input type="submit" name="set_password" class="lt_button" value="Set password"></p></form>';
 
 echo '<h3 class="lt">Authenticator</h3>';

@@ -150,20 +150,20 @@ if (!$owner) {
 echo '<form id="editform" method="post" onsubmit="offNavWarn();">' . $app->csrf->field();
 echo '<input type="hidden" name="writ_id" value="' . (int) $wid . '">';
 echo '<input type="hidden" name="user_form" value="' . (int) $uid . '">';
-echo '<p class="sans"><label>Block: <select class="formselect small" name="block" id="block" onchange="onNavWarn()">';
+echo '<p class="sans">Block</p><select class="formselect small" name="block" id="block" onchange="onNavWarn()">';
 echo '<option value="0">Main</option>';
 foreach ($blocks as $b) {
     $sel = ((int) $w['block_id'] === (int) $b['id']) ? ' selected' : '';
     echo '<option value="' . (int) $b['id'] . '"' . $sel . '>' . h($app->block->named($b)) . '</option>';
 }
-echo '</select></label></p>';
+echo '</select>';
 $workShow = (string) $w['work'];
 if ($workShow === '' || $workShow === 'task-' . $wid) {
     $workShow = '';
 }
-echo '<p class="sans">Work<br><input name="work" id="work" class="readBox" maxlength="122" value="' . h($workShow) . '" placeholder="task-' . (int) $wid . '" onchange="onNavWarn()"></p>';
+echo '<p class="sans">Work</p><input name="work" id="work" class="readBox" maxlength="122" value="' . h($workShow) . '" placeholder="task-' . (int) $wid . '" onchange="onNavWarn()">';
 $titleShow = ((string) $w['title'] === 'Untitled' || (string) $w['title'] === '') ? '' : (string) $w['title'];
-echo '<p class="sans">Title<br><input name="title" id="title" class="writingBox" maxlength="122" value="' . h($titleShow) . '" placeholder="Untitled" onchange="onNavWarn()"></p>';
+echo '<p class="sans">Title</p><input name="title" id="title" class="writingBox" maxlength="122" value="' . h($titleShow) . '" placeholder="Untitled" onchange="onNavWarn()">';
 if ($w['instructions']) {
     echo '<h4 class="review">Instructions</h4><section class="writcontent remarks">' . nl_text($w['instructions']) . '</section>';
 }
@@ -181,14 +181,14 @@ if ($reviewed) {
     echo '<p class="sans">Your correction</p>';
     echo '<textarea name="correction" id="writingArea" class="writingBox" rows="12" cols="82" spellcheck="false" onchange="onNavWarn()">' . h($w['correction']) . '</textarea>';
     echo '<input type="hidden" name="correction_wordcount" id="wordCountInput" value="0">';
-    echo '<p>' . confirm_submit('submit_correction', 'Submit final correction', 'Confirm') . '</p>';
+    echo '<p>' . confirm_writ('submit_correction', 'Submit final correction', 'Confirm') . '</p>';
 } else {
     echo '<textarea name="draft" id="writingArea" class="writingBox" rows="12" cols="82" spellcheck="false" autocapitalize="none" onchange="onNavWarn()" placeholder="Draft contents...">' . h($w['draft']) . '</textarea>';
     echo '<input type="hidden" name="draft_wordcount" id="wordCountInput" value="0">';
     echo '<input type="hidden" name="save_draft" value="1">';
-    echo '<p>' . confirm_submit('submit_draft', 'Submit draft', 'Confirm') . '</p>';
+    echo '<p>' . confirm_writ('submit_draft', 'Submit draft', 'Confirm') . '</p>';
 }
-echo '<p class="sans">Notes<br><textarea name="notes" rows="4" cols="82" onchange="onNavWarn()">' . h($w['notes']) . '</textarea></p>';
+echo '<p class="sans">Notes</p><textarea name="notes" class="writingBox" rows="4" onchange="onNavWarn()">' . h($w['notes']) . '</textarea>';
 echo '</form>';
 echo comments_markup($app->writ->comments($wid), $wid, false, $uid, $app->csrf->token());
 echo '<script>pwWord("writingArea","wordCount","wordCountInput");pwNoPaste("writingArea");pwBindSave("editform","ajax/save-writ.php","ajax_changes");</script>';

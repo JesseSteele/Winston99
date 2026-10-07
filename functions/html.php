@@ -188,7 +188,7 @@ function get_switch(string $text, string $title, string $action, string $name, s
 function dead_switch(string $text, string $title, string $class): string
 {
     return '<form action="#" method="post" style="display:inline">'
-        . '<input type="submit" title="' . h($title) . '" value="' . h($text) . '" class="' . h($class) . '" disabled="disabled">'
+        . '<input type="submit" title="' . h($title) . '" value="' . h($text) . '" class="' . h(trim($class . ' btn-dormant')) . '" disabled="disabled">'
         . '</form>';
 }
 
@@ -197,7 +197,7 @@ function history_button(bool $hasHistory, string $href): string
     if ($hasHistory) {
         return button('Show history', 'Open draft and redraft history', $href, 'lt_button');
     }
-    return '<button type="button" class="act_disabled" disabled title="No redraft history">no history</button>';
+    return '<button type="button" class="act_disabled btn-dormant" disabled title="No redraft history">no history</button>';
 }
 
 /** First click reveals Cancel + Confirm over a page-dimming overlay. */
@@ -207,15 +207,24 @@ function confirm_submit(
     string $confirmLabel,
     ?string $value = null,
     string $goClass = 'dk_sub_button',
-    string $yesClass = 'ln_button'
+    string $yesClass = 'ln_button',
+    string $cancelClass = ''
 ): string {
     $val = $value ?? $confirmLabel;
-    $cancelClass = preg_match('/\bsmall\b/', $goClass) ? 'act_ltgray small' : 'dk_sub_button';
+    if ($cancelClass === '') {
+        $cancelClass = preg_match('/\bsmall\b/', $goClass) ? 'act_ltgray small' : 'dk_sub_button';
+    }
     return '<span class="pw-confirm-wrap">'
         . '<button type="button" class="' . h($goClass) . ' pw-confirm-go">' . h($firstLabel) . '</button>'
         . '<button type="button" class="' . h($cancelClass) . ' pw-confirm-cancel" hidden>Cancel</button>'
         . '<button type="submit" name="' . h($name) . '" value="' . h($val) . '" class="' . h($yesClass) . ' pw-confirm-yes" hidden disabled>' . h($confirmLabel) . '</button>'
         . '</span>';
+}
+
+/** Writ, assignment, and test double-confirm only: red Cancel, green Confirm. */
+function confirm_writ(string $name, string $firstLabel, string $confirmLabel, ?string $value = null): string
+{
+    return confirm_submit($name, $firstLabel, $confirmLabel, $value, 'dk_sub_button', 'act_green', 'act_red');
 }
 
 /**

@@ -73,11 +73,11 @@ if ($canDisable) {
 $off = $noPass && $canDisable ? ' disabled' : '';
 echo '<form method="post" id="pwform" class="pw-pass-fields' . ($noPass && $canDisable ? ' pw-off' : '') . '">' . $app->csrf->field();
 if (!$noPass) {
-    echo '<p class="sans">Current<br>' . $form->input('current', 'password', 'required' . $off) . '</p>';
+    echo '<p class="sans">Current</p>' . $form->input('current', 'password', 'required' . $off);
 }
-echo '<p class="sans">New<br>' . $form->input('pass1', 'password', 'required' . $off) . '</p>';
-echo '<p class="sans">Confirm<br>' . $form->input('pass2', 'password', 'required' . $off) . '</p>';
-echo '<p><input type="submit" class="lt_button" value="' . ($noPass ? 'Set password' : 'Change password') . '"'
+echo '<p class="sans">New</p>' . $form->input('pass1', 'password', 'required' . $off);
+echo '<p class="sans">Confirm</p>' . $form->input('pass2', 'password', 'required' . $off);
+echo '<p><input type="submit" class="lt_button' . ($off !== '' ? ' btn-dormant' : '') . '" value="' . ($noPass ? 'Set password' : 'Change password') . '"'
     . $off . '></p></form>';
 echo '<script>
 (function(){
@@ -89,6 +89,7 @@ echo '<script>
     var on = cb.checked;
     form.classList.toggle("pw-off", on);
     Array.prototype.forEach.call(form.querySelectorAll("input"), function (i) {
+      if (i.type === "submit") i.classList.toggle("btn-dormant", on);
       if (i.type === "hidden") return;
       i.disabled = on;
     });

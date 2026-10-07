@@ -88,8 +88,8 @@ if ($needTotp) {
 } else {
     echo '<h3 class="lt">Login Options</h3>';
     echo '<form method="post" action="login.php">' . $app->csrf->field();
-    echo '<p class="sans">Username<br><input name="username" required autocomplete="username"></p>';
-    echo '<p class="sans">Password<br><input type="password" name="pass" required autocomplete="current-password"></p>';
+    echo '<p class="sans">Username</p><input name="username" required autocomplete="username">';
+    echo '<p class="sans">Password</p><input type="password" name="pass" required autocomplete="current-password">';
     echo '<p><input type="submit" class="set_gray" value="Log in"> ';
     echo '<a class="dk sans" href="forgot.php">Forgot password?</a></p></form>';
     echo '<p class="sans dk login-or">OR</p>';

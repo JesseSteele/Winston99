@@ -47,9 +47,9 @@ if ($form->get('editor_id') === '' && $edOpts) {
     $form->put('editor_id', (string) array_key_first($edOpts));
 }
 echo '<form method="post">' . $app->csrf->field();
-echo '<p class="sans">Name<br>' . $form->input('name', 'text', 'required') . '</p>';
-echo '<p class="sans">Code<br>' . $form->input('code', 'text', 'size="8"') . '</p>';
-echo '<p class="sans">Editor<br>' . $form->select('editor_id', $edOpts) . '</p>';
+echo '<p class="sans">Name</p>' . $form->input('name', 'text', 'required');
+echo '<p class="sans">Code</p>' . $form->input('code', 'text', 'size="8"');
+echo '<p class="sans">Editor</p>' . $form->select('editor_id', $edOpts);
 echo '<p><input type="submit" name="create" class="lt_button" value="Create block"></p></form>';
 echo '<h3 class="lt" style="display:inline-block;margin-right:0.75em">Open blocks</h3>';
 echo button('View closed blocks', 'Closed blocks', 'blocks-closed.php', 'editNoteButton');

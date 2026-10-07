@@ -505,7 +505,7 @@
       if (keep) {
         var same = id === saved;
         keep.disabled = same;
-        keep.className = same ? 'set_writ_disabled' : 'set_writ_green';
+        keep.className = same ? 'lt_button btn-dormant' : 'set_writ_green';
       }
     }
     form.addEventListener('change', apply);

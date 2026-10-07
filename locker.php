@@ -49,8 +49,8 @@ $app->view->start('My Locker', 'locker', 'my');
 echo '<h2 class="lt">My Locker</h2>';
 echo '<form method="post" class="sans">' . $app->csrf->field();
 echo '<input type="hidden" name="save_contact" value="1">';
-echo '<p class="field">Name<br>' . $form->input('name', 'text', 'maxlength="80" required', 'readBox') . '</p>';
-echo '<p class="field">Email<br>' . $form->input('email', 'email', 'maxlength="120" required', 'readBox') . '</p>';
+echo '<p class="field">Name</p>' . $form->input('name', 'text', 'maxlength="80" required', 'readBox');
+echo '<p class="field">Email</p>' . $form->input('email', 'email', 'maxlength="120" required', 'readBox');
 echo '<p><input type="submit" class="lt_button" value="Save"></p></form>';
 echo '<h3 class="lt">Theme</h3>';
 echo '<form method="post" class="sans" id="winston99-theme-form" data-saved="' . h($curTheme = winston99_theme_id($u)) . '">';
@@ -60,7 +60,7 @@ foreach (winston99_themes() as $tid => $tname) {
     $ck = $curTheme === $tid ? ' checked' : '';
     echo '<p class="field"><label><input type="radio" name="theme" value="' . h($tid) . '"' . $ck . '> ' . h($tname) . '</label></p>';
 }
-echo '<p><input type="submit" id="winston99-theme-keep" class="set_writ_disabled" value="Keep theme" disabled></p></form>';
+echo '<p><input type="submit" id="winston99-theme-keep" class="lt_button btn-dormant" value="Keep theme" disabled></p></form>';
 echo '<p>' . button('Password', 'Change password', 'password.php', 'set_gray') . '</p>';
 echo '<p>' . button('Security', '2FA and passkeys', 'security.php', 'set_gray') . '</p>';
 echo '<p>' . button('Notification settings', 'In-app and email', 'notify-settings.php', 'set_gray') . '</p>';

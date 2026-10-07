@@ -11,7 +11,7 @@ if (!$w || (int) $w['writer_id'] !== $app->auth->id() || $w['kind'] !== 'test') 
 $t = $app->test->find((int) $w['test_id']);
 $items = json_arr($t['parsed'] ?? '[]');
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $app->csrf->check() && $w['draft_status'] !== 'submitted') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $app->csrf->check() && isset($_POST['submit_test']) && $w['draft_status'] !== 'submitted') {
     $answers = $_POST['q'] ?? [];
     $g = $app->test->parser->grade($items, $answers);
     $outof = max(1, (int) $g['auto_possible']);
@@ -59,5 +59,5 @@ foreach ($items as $it) {
         echo '<p><textarea name="q[' . $n . ']" rows="6" cols="70" class="writingBox"></textarea></p>';
     }
 }
-echo '<p><input type="submit" class="lt_button" value="Submit test"></p></form>';
+echo '<p>' . confirm_writ('submit_test', 'Submit test', 'Confirm') . '</p></form>';
 $app->view->end();

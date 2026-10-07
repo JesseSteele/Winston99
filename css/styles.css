@@ -366,6 +366,16 @@ border: none;
 width:99%;
 outline:none;
 padding:3px 3px 3px 8px;
+box-sizing: border-box;
+}
+
+textarea.writingBox,
+textarea.writingBox:focus {
+  display: block;
+  width: 99%;
+  max-width: 100%;
+  resize: vertical;
+  outline: none;
 }
 
 #saveName {
@@ -820,8 +830,14 @@ button.small:hover {
   background-color: #731a15;
 }
 
-.act_red:hover {
+.act_red:hover,
+button.act_red:hover {
   background-color: #f71771;
+}
+
+button.act_red {
+  color: #ccc;
+  background-color: #731a15;
 }
 
 .act_orange {
@@ -838,8 +854,14 @@ button.small:hover {
   background-color: #51700e;
 }
 
-.act_green:hover {
+.act_green:hover,
+button.act_green:hover {
   background-color: #f71771;
+}
+
+button.act_green {
+  color: #ccc;
+  background-color: #51700e;
 }
 
 .act_blue {
@@ -858,6 +880,25 @@ button.small:hover {
 
 .act_disabled:hover {
   color: #f71771;
+}
+
+/* Dormant controls keep their own fill. Only the label fades into it. */
+.btn-dormant,
+.btn-dormant:hover,
+.btn-dormant:disabled,
+button.btn-dormant,
+button.btn-dormant:hover,
+button.act_disabled.btn-dormant,
+button.act_disabled.btn-dormant:hover,
+input.btn-dormant,
+input.btn-dormant:hover,
+input.btn-dormant:disabled,
+form input.btn-dormant,
+form input.set_writ_disabled.btn-dormant,
+form input.set_writ_disabled.btn-dormant:hover,
+form input.lt_button.btn-dormant,
+form input.lt_button.btn-dormant:hover {
+  color: rgb(204 204 204 / 32%);
 }
 
 input.small:hover,
@@ -1545,10 +1586,9 @@ p.field {
   margin: 0.7em 0;
   font-family: Verdana, Arial, Helvetica, sans-serif;
 }
-p.field label {
+p.field > label:not(:has(input)):not(:has(select)):not(:has(textarea)) {
   display: block;
-  margin-bottom: 0.25em;
-  font-family: Verdana, Arial, Helvetica, sans-serif;
+  margin-bottom: 1em;
 }
 p.field input[type="text"],
 p.field input[type="email"],
