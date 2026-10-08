@@ -32,36 +32,71 @@ $ds = (string) $w['draft_status'];
 $es = (string) $w['edits_status'];
 $peek = $app->writ->isPeek($w);
 
+$browserHold = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $app->csrf->check() && !$peek) {
     $f = $fields();
     $writerId = (int) $w['writer_id'];
+    $act = '';
+    $ok = false;
     if (isset($_POST['submit_edits'])) {
-        $app->writ->submitReview($wid, $f);
-        $app->notify->send($writerId, 'edited_writ', 'Your writ was reviewed', 'writ.php?w=' . $wid);
-        $app->notify->toObserversOf($writerId, 'edited_writ', 'Writ reviewed', 'writ.php?w=' . $wid);
-        $app->redirect('editor.php');
+        $act = 'Not submitted.';
+        $ok = $app->writ->submitReview($wid, $f);
     } elseif (isset($_POST['submit_redraft'])) {
-        $app->writ->sendRedraft($wid, $f);
-        $app->notify->send($writerId, 'redraft_writ', 'Redraft requested — start from the editor version', 'writ.php?w=' . $wid);
-        $app->redirect('editor.php');
+        $act = 'Not redrafted.';
+        $ok = $app->writ->sendRedraft($wid, $f);
     } elseif (isset($_POST['submit_scoring'])) {
-        $app->writ->score($wid, $f);
-        $app->notify->send($writerId, 'scored_writ', 'Your writ was scored', 'writ.php?w=' . $wid);
-        $app->notify->toObserversOf($writerId, 'scored_writ', 'Writ scored', 'writ.php?w=' . $wid);
+        $act = 'Not scored.';
+        $ok = $app->writ->score($wid, $f);
+    }
+    if ($act !== '' && $ok) {
+        if (isset($_POST['submit_edits'])) {
+            $app->notify->send($writerId, 'edited_writ', 'Your writ was reviewed', 'writ.php?w=' . $wid);
+            $app->notify->toObserversOf($writerId, 'edited_writ', 'Writ reviewed', 'writ.php?w=' . $wid);
+        } elseif (isset($_POST['submit_redraft'])) {
+            $app->notify->send($writerId, 'redraft_writ', 'Redraft requested — start from the editor version', 'writ.php?w=' . $wid);
+        } else {
+            $app->notify->send($writerId, 'scored_writ', 'Your writ was scored', 'writ.php?w=' . $wid);
+            $app->notify->toObserversOf($writerId, 'scored_writ', 'Writ scored', 'writ.php?w=' . $wid);
+        }
         $app->redirect('editor.php');
+    }
+    if ($act !== '') {
+        $item = [
+            'kind' => 'writ',
+            'id' => $wid,
+            'title' => (string) $f['title'],
+            'href' => 'review.php?w=' . $wid,
+            'warning' => 'Saved in this browser until the database connection is restored, then try again.',
+            'fields' => $f,
+        ];
+        browser_save_remember($item);
+        $browserHold = msg_error($act) . msg_warning($item['warning']) . browser_save_script($item);
+        $w = array_merge($w, [
+            'title' => $f['title'],
+            'work' => $f['work'],
+            'notes' => $f['notes'],
+            'edits' => $f['edits'],
+            'edit_notes' => $f['edit_notes'],
+            'scoring' => $f['scoring'],
+            'score' => $f['score'],
+            'outof' => $f['outof'],
+        ]);
     }
 }
 
 $writer = $app->user->find((int) $w['writer_id']);
 
 $app->view->start('Review', 'ewrits', 'editor');
+if ($browserHold !== '') {
+    echo $browserHold;
+}
 echo '<p class="save-row">' . history_button($app->writ->hasHistory($w), 'history.php?w=' . $wid) . '</p>';
 echo '<p class="sans">Writer: ' . h($writer['name'] ?? '') . '</p>';
 echo writ_times($w);
 if ($w['kind'] === 'test') {
     echo '<p class="sans">This is a test. Auto-score: ' . h((string) $w['test_auto_score']) . '/' . h((string) $w['outof']) . '</p>';
 }
-echo '<form id="editsform" method="post" onsubmit="offNavWarn();">' . $app->csrf->field();
+echo '<form id="editsform" method="post" data-browser-kind="writ" data-browser-id="' . (int) $wid . '" onsubmit="offNavWarn();">' . $app->csrf->field();
 echo '<input type="hidden" name="writ_id" value="' . $wid . '">';
 echo '<input type="hidden" name="reviewed_writer_id" value="' . (int) $w['writer_id'] . '">';
 

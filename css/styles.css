@@ -1918,4 +1918,140 @@ button.lt_button.small {
   border-radius: 4px;
 }
 
+.warning,
+p.warning,
+span.warning {
+  color: #d08948;
+}
+
+.error,
+p.error,
+span.error {
+  color: #c45c56;
+}
+
+/* Tint only. The row keeps its lr/dr fill underneath. */
+table.list tr.browser_save td {
+  box-shadow: inset 0 0 0 999px rgba(174, 95, 60, 0.28);
+}
+
+td.account-actions a + a {
+  margin-left: 0.4em;
+}
+
+/* Light themes opt in with `@tone light` in the theme file.
+   Dark stays the default. Pink hover stays. */
+html.tone-light .warning,
+html.tone-light p.warning,
+html.tone-light span.warning {
+  color: #8a4e12;
+}
+html.tone-light .error,
+html.tone-light p.error,
+html.tone-light span.error,
+html.tone-light .noticered,
+html.tone-light p.noticered,
+html.tone-light span.noticered {
+  color: #8d2a28;
+}
+html.tone-light .noticegreen,
+html.tone-light p.noticegreen,
+html.tone-light span.noticegreen {
+  color: #2d6a32;
+}
+html.tone-light table.list tr.browser_save td {
+  box-shadow: inset 0 0 0 999px rgba(176, 98, 40, 0.22);
+}
+html.tone-light .lt_button,
+html.tone-light button.lt_button,
+html.tone-light input.lt_button,
+html.tone-light form input.lt_button,
+html.tone-light .navDarkButton,
+html.tone-light .editNoteButton,
+html.tone-light .newNoteButton,
+html.tone-light .set_gray,
+html.tone-light button.set_gray,
+html.tone-light form input.set_gray,
+html.tone-light .act_ltgray,
+html.tone-light .act_gray,
+html.tone-light .act_dkgray,
+html.tone-light .ln_button,
+html.tone-light form input.set_writ_gray,
+html.tone-light form input.set_writ_disabled {
+  background-color: #efe8e0;
+  color: #2c2c2c;
+  border-color: #c8bfb6;
+}
+html.tone-light .navDarkButton.user.active,
+html.tone-light .navDarkButton.user.active:hover,
+html.tone-light .navButton.user.active,
+html.tone-light .navButton.user.activedash {
+  background-color: #d9cfc4;
+  color: #222;
+}
+html.tone-light .act_red,
+html.tone-light button.act_red,
+html.tone-light form input.set_writ_red {
+  background-color: #f4d4d0;
+  color: #6d221c;
+}
+html.tone-light .act_orange,
+html.tone-light form input.set_writ_orange {
+  background-color: #f6e3cc;
+  color: #6a4318;
+}
+html.tone-light .act_green,
+html.tone-light button.act_green,
+html.tone-light form input.set_writ_green {
+  background-color: #e5f0c4;
+  color: #3d5410;
+}
+html.tone-light .act_blue,
+html.tone-light form input.set_writ_blue {
+  background-color: #d7e2ef;
+  color: #243448;
+}
+html.tone-light .lt_button:hover,
+html.tone-light button.lt_button:hover,
+html.tone-light input.lt_button:hover,
+html.tone-light form input.lt_button:hover,
+html.tone-light .navDarkButton:hover,
+html.tone-light .editNoteButton:hover,
+html.tone-light .newNoteButton:hover,
+html.tone-light .set_gray:hover,
+html.tone-light button.set_gray:hover,
+html.tone-light form input.set_gray:hover,
+html.tone-light .act_ltgray:hover,
+html.tone-light .act_gray:hover,
+html.tone-light .act_red:hover,
+html.tone-light button.act_red:hover,
+html.tone-light .act_green:hover,
+html.tone-light button.act_green:hover,
+html.tone-light .act_blue:hover,
+html.tone-light .act_orange:hover,
+html.tone-light .ln_button:hover,
+html.tone-light form input.set_writ_gray:hover,
+html.tone-light form input.set_writ_red:hover,
+html.tone-light form input.set_writ_orange:hover,
+html.tone-light form input.set_writ_green:hover,
+html.tone-light form input.set_writ_blue:hover {
+  background-color: #f71771;
+  color: #fff;
+  border-color: #f71771;
+}
+html.tone-light .btn-dormant,
+html.tone-light .btn-dormant:hover,
+html.tone-light .btn-dormant:disabled,
+html.tone-light form input.lt_button.btn-dormant,
+html.tone-light form input.lt_button.btn-dormant:hover,
+html.tone-light form input.set_writ_disabled.btn-dormant,
+html.tone-light button.act_disabled.btn-dormant,
+html.tone-light button.act_disabled.btn-dormant:hover {
+  background-color: #efe8e0;
+  color: rgb(44 44 44 / 38%);
+  border-color: #c8bfb6;
+}
+
+
+
 

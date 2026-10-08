@@ -4,6 +4,7 @@ $import = ['auth', 'csrf', 'view', 'html', 'user', 'notify', 'passkey', 'oauth',
 require __DIR__ . '/lib/boot.php';
 $u = $app->auth->requireUser();
 $msg = '';
+$dbErr = '';
 $uid = $app->auth->id();
 $pks = $app->passkey->list($uid);
 $oauths = $app->oauth->list($uid);
@@ -45,21 +46,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $app->csrf->check()) {
             $form->fail('pass2', 'New passwords must match and be at least 8 characters.');
         }
         if ($form->ok()) {
-            $app->user->setPassword($uid, $p1);
-            $msg = 'Password changed.';
-            $noPass = false;
-            $u = $app->user->find($uid) ?? $u;
-            $app->audit->record($uid, 'password', 'self');
-            if ($u['editor_id']) {
-                $app->notify->send((int) $u['editor_id'], 'password_change', $u['username'] . ' changed their password', '');
+            if (!db_call(function () use ($app, $uid, $p1) {
+                $app->user->setPassword($uid, $p1);
+            })) {
+                $dbErr = 'No database connection; changes not saved!';
+            } else {
+                $msg = 'Password changed.';
+                $noPass = false;
+                $u = $app->user->find($uid) ?? $u;
+                $app->audit->record($uid, 'password', 'self');
+                if ($u['editor_id']) {
+                    $app->notify->send((int) $u['editor_id'], 'password_change', $u['username'] . ' changed their password', '');
+                }
+                $form = new Form();
             }
-            $form = new Form();
         }
     }
 }
 
 $app->view->start('Password', 'locker', 'my');
 echo '<h2 class="lt">Password</h2>';
+if ($dbErr) {
+    echo '<p class="sans error">' . h($dbErr) . '</p>';
+}
 if ($msg) {
     echo '<p class="sans noticegreen">' . h($msg) . '</p>';
 }

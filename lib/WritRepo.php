@@ -77,111 +77,184 @@ final class WritRepo
 
     public function saveDraft(int $id, int $writerId, array $fields): bool
     {
-        $st = $this->app->db->run(
-            'UPDATE writs SET title=?, work=?, block_id=?, notes=?, draft=?, draft_wordcount=?, writing_time=?, draft_status=\'saved\', draft_save_date=NOW()
-             WHERE id=? AND writer_id=?',
-            [
-                $fields['title'], $fields['work'], $fields['block_id'], $fields['notes'],
-                $fields['draft'], $fields['draft_wordcount'], $fields['writing_time'] ?? 0,
-                $id, $writerId,
-            ]
-        );
-        return $st->rowCount() >= 0;
-    }
-
-    public function submitDraft(int $id, int $writerId): void
-    {
-        $w = $this->find($id);
-        if (!$w || (int) $w['writer_id'] !== $writerId) {
-            throw new RuntimeException('Writ not found');
+        try {
+            $this->app->db->run(
+                'UPDATE writs SET title=?, work=?, block_id=?, notes=?, draft=?, draft_wordcount=?, writing_time=?, draft_status=\'saved\', draft_save_date=NOW()
+                 WHERE id=? AND writer_id=?',
+                [
+                    $fields['title'], $fields['work'], $fields['block_id'], $fields['notes'],
+                    $fields['draft'], $fields['draft_wordcount'], $fields['writing_time'] ?? 0,
+                    $id, $writerId,
+                ]
+            );
+            $row = $this->find($id);
+            return $row
+                && (int) $row['writer_id'] === $writerId
+                && (string) $row['draft'] === (string) $fields['draft']
+                && (string) $row['title'] === (string) $fields['title']
+                && (string) $row['notes'] === (string) $fields['notes'];
+        } catch (Throwable $e) {
+            return false;
         }
-        $drafts = json_arr($w['drafts']);
-        $drafts[] = [
-            'at' => date('c'),
-            'body' => $w['draft'],
-            'wordcount' => (int) $w['draft_wordcount'],
-        ];
-        $this->app->db->run(
-            'UPDATE writs SET drafts=?, draft_status=\'submitted\', draft_submit_date=NOW() WHERE id=? AND writer_id=?',
-            [json_enc($drafts), $id, $writerId]
-        );
     }
 
-    public function saveEdits(int $id, array $fields): void
+    public function submitDraft(int $id, int $writerId): bool
     {
-        $this->app->db->run(
-            'UPDATE writs SET block_id=?, title=?, work=?, notes=?, edits=?, edits_wordcount=?, edit_notes=?, scoring=?, score=?, outof=?
-             WHERE id=?',
-            [
-                $fields['block_id'], $fields['title'], $fields['work'], $fields['notes'],
-                $fields['edits'], $fields['edits_wordcount'], $fields['edit_notes'],
-                $fields['scoring'] ?? '', $fields['score'], $fields['outof'],
-                $id,
-            ]
-        );
+        try {
+            $w = $this->find($id);
+            if (!$w || (int) $w['writer_id'] !== $writerId) {
+                return false;
+            }
+            $body = (string) $w['draft'];
+            $drafts = json_arr($w['drafts']);
+            $drafts[] = [
+                'at' => date('c'),
+                'body' => $body,
+                'wordcount' => (int) $w['draft_wordcount'],
+            ];
+            $this->app->db->run(
+                'UPDATE writs SET drafts=?, draft_status=\'submitted\', draft_submit_date=NOW() WHERE id=? AND writer_id=?',
+                [json_enc($drafts), $id, $writerId]
+            );
+            $row = $this->find($id);
+            return $row
+                && (string) $row['draft_status'] === 'submitted'
+                && (string) $row['draft'] === $body;
+        } catch (Throwable $e) {
+            return false;
+        }
     }
 
-    public function submitReview(int $id, array $fields): void
+    public function saveEdits(int $id, array $fields): bool
     {
-        $this->saveEdits($id, $fields);
-        $this->app->db->run(
-            'UPDATE writs SET draft_status=\'reviewed\', edits_status=\'drafting\', edits_date=NOW() WHERE id=?',
-            [$id]
-        );
+        try {
+            $this->app->db->run(
+                'UPDATE writs SET block_id=?, title=?, work=?, notes=?, edits=?, edits_wordcount=?, edit_notes=?, scoring=?, score=?, outof=?
+                 WHERE id=?',
+                [
+                    $fields['block_id'], $fields['title'], $fields['work'], $fields['notes'],
+                    $fields['edits'], $fields['edits_wordcount'], $fields['edit_notes'],
+                    $fields['scoring'] ?? '', $fields['score'], $fields['outof'],
+                    $id,
+                ]
+            );
+            $row = $this->find($id);
+            return $row && (string) $row['edits'] === (string) $fields['edits']
+                && (string) $row['edit_notes'] === (string) $fields['edit_notes'];
+        } catch (Throwable $e) {
+            return false;
+        }
+    }
+
+    public function submitReview(int $id, array $fields): bool
+    {
+        if (!$this->saveEdits($id, $fields)) {
+            return false;
+        }
+        try {
+            $this->app->db->run(
+                'UPDATE writs SET draft_status=\'reviewed\', edits_status=\'drafting\', edits_date=NOW() WHERE id=?',
+                [$id]
+            );
+            $row = $this->find($id);
+            return $row
+                && (string) $row['draft_status'] === 'reviewed'
+                && (string) $row['edits'] === (string) $fields['edits'];
+        } catch (Throwable $e) {
+            return false;
+        }
     }
 
     /** Editor redraft: edited text becomes the writer's new starting point. */
-    public function sendRedraft(int $id, array $fields): void
+    public function sendRedraft(int $id, array $fields): bool
     {
         $w = $this->find($id);
         if (!$w) {
-            throw new RuntimeException('Writ not found');
+            return false;
         }
-        $this->saveEdits($id, $fields);
-        $drafts = json_arr($w['drafts']);
-        $drafts[] = [
-            'at' => date('c'),
-            'body' => $w['draft'],
-            'wordcount' => (int) $w['draft_wordcount'],
-            'kind' => 'pre-redraft',
-        ];
-        $redrafts = json_arr($w['redrafts']);
-        $redrafts[] = [
-            'at' => date('c'),
-            'body' => $fields['edits'],
-            'notes' => $fields['edit_notes'] ?? '',
-            'wordcount' => (int) $fields['edits_wordcount'],
-        ];
-        $this->app->db->run(
-            'UPDATE writs SET drafts=?, redrafts=?, draft=?, draft_wordcount=?, draft_status=\'redraft\', edits_status=\'drafting\', edits_date=NOW(), score=NULL
-             WHERE id=?',
-            [json_enc($drafts), json_enc($redrafts), $fields['edits'], $fields['edits_wordcount'], $id]
-        );
+        if (!$this->saveEdits($id, $fields)) {
+            return false;
+        }
+        try {
+            $drafts = json_arr($w['drafts']);
+            $drafts[] = [
+                'at' => date('c'),
+                'body' => $w['draft'],
+                'wordcount' => (int) $w['draft_wordcount'],
+                'kind' => 'pre-redraft',
+            ];
+            $redrafts = json_arr($w['redrafts']);
+            $redrafts[] = [
+                'at' => date('c'),
+                'body' => $fields['edits'],
+                'notes' => $fields['edit_notes'] ?? '',
+                'wordcount' => (int) $fields['edits_wordcount'],
+            ];
+            $this->app->db->run(
+                'UPDATE writs SET drafts=?, redrafts=?, draft=?, draft_wordcount=?, draft_status=\'redraft\', edits_status=\'drafting\', edits_date=NOW(), score=NULL
+                 WHERE id=?',
+                [json_enc($drafts), json_enc($redrafts), $fields['edits'], $fields['edits_wordcount'], $id]
+            );
+            $row = $this->find($id);
+            return $row
+                && (string) $row['draft_status'] === 'redraft'
+                && (string) $row['draft'] === (string) $fields['edits'];
+        } catch (Throwable $e) {
+            return false;
+        }
     }
 
-    public function saveCorrection(int $id, int $writerId, array $fields): void
+    public function saveCorrection(int $id, int $writerId, array $fields): bool
     {
-        $this->app->db->run(
-            'UPDATE writs SET notes=?, correction=?, correction_wordcount=?, edits_status=\'saved\', corrected_save_date=NOW()
-             WHERE id=? AND writer_id=?',
-            [$fields['notes'], $fields['correction'], $fields['correction_wordcount'], $id, $writerId]
-        );
+        try {
+            $this->app->db->run(
+                'UPDATE writs SET notes=?, correction=?, correction_wordcount=?, edits_status=\'saved\', corrected_save_date=NOW()
+                 WHERE id=? AND writer_id=?',
+                [$fields['notes'], $fields['correction'], $fields['correction_wordcount'], $id, $writerId]
+            );
+            $row = $this->find($id);
+            return $row
+                && (int) $row['writer_id'] === $writerId
+                && (string) $row['correction'] === (string) $fields['correction'];
+        } catch (Throwable $e) {
+            return false;
+        }
     }
 
-    public function submitCorrection(int $id, int $writerId): void
+    public function submitCorrection(int $id, int $writerId): bool
     {
-        $this->app->db->run(
-            'UPDATE writs SET edits_status=\'submitted\', corrected_submit_date=NOW() WHERE id=? AND writer_id=?',
-            [$id, $writerId]
-        );
+        try {
+            $before = $this->find($id);
+            if (!$before || (int) $before['writer_id'] !== $writerId) {
+                return false;
+            }
+            $body = (string) $before['correction'];
+            $this->app->db->run(
+                'UPDATE writs SET edits_status=\'submitted\', corrected_submit_date=NOW() WHERE id=? AND writer_id=?',
+                [$id, $writerId]
+            );
+            $row = $this->find($id);
+            return $row
+                && (string) $row['edits_status'] === 'submitted'
+                && (string) $row['correction'] === $body;
+        } catch (Throwable $e) {
+            return false;
+        }
     }
 
-    public function score(int $id, array $fields): void
+    public function score(int $id, array $fields): bool
     {
-        $this->app->db->run(
-            'UPDATE writs SET scoring=?, score=?, outof=?, edits_status=\'scored\', scoring_date=NOW() WHERE id=?',
-            [$fields['scoring'], $fields['score'], $fields['outof'], $id]
-        );
+        try {
+            $this->app->db->run(
+                'UPDATE writs SET scoring=?, score=?, outof=?, edits_status=\'scored\', scoring_date=NOW() WHERE id=?',
+                [$fields['scoring'], $fields['score'], $fields['outof'], $id]
+            );
+            $row = $this->find($id);
+            return $row && (string) $row['edits_status'] === 'scored'
+                && (string) $row['scoring'] === (string) $fields['scoring'];
+        } catch (Throwable $e) {
+            return false;
+        }
     }
 
     public function markViewed(int $id, int $writerId): void
@@ -199,13 +272,21 @@ final class WritRepo
         $this->app->db->run("UPDATE writs SET {$col} = 'archived' WHERE id = ?", [$id]);
     }
 
-    public function saveTestAnswers(int $id, int $writerId, array $answers, int $auto, int $outof): void
+    public function saveTestAnswers(int $id, int $writerId, array $answers, int $auto, int $outof): bool
     {
-        $this->app->db->run(
-            'UPDATE writs SET test_answers=?, test_auto_score=?, draft_status=\'submitted\', draft_submit_date=NOW(), outof=?, score=?
-             WHERE id=? AND writer_id=?',
-            [json_enc($answers), $auto, $outof, $auto, $id, $writerId]
-        );
+        try {
+            $this->app->db->run(
+                'UPDATE writs SET test_answers=?, test_auto_score=?, draft_status=\'submitted\', draft_submit_date=NOW(), outof=?, score=?
+                 WHERE id=? AND writer_id=?',
+                [json_enc($answers), $auto, $outof, $auto, $id, $writerId]
+            );
+            $row = $this->find($id);
+            return $row
+                && (string) $row['draft_status'] === 'submitted'
+                && (string) $row['test_answers'] === json_enc($answers);
+        } catch (Throwable $e) {
+            return false;
+        }
     }
 
     /** Writer has not handed the current stage back to the editor. */

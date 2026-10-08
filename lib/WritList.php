@@ -56,6 +56,7 @@ final class WritList
             "SELECT n.* FROM notes n WHERE " . implode(' AND ', $where) . " ORDER BY {$order}",
             function (array $rows) {
                 $cc = 'lr';
+                echo browser_save_mount('note');
                 echo '<table class="list lt notes sans"><tbody>';
                 foreach ($rows as $n) {
                     $id = (int) $n['id'];
@@ -318,7 +319,7 @@ final class WritList
                 foreach ($rows as $row) {
                     $id = (int) $row['id'];
                     echo '<tr class="' . $cc . '">';
-                    echo '<td><a class="listed_note" href="account.php?u=' . $id . '"><b>' . h((string) $row['name']) . '</b></a></td>';
+                    echo '<td><a class="listed_note" href="meta.php?u=' . $id . '"><b>' . h((string) $row['name']) . '</b></a></td>';
                     echo '<td>' . h((string) $row['username']) . '</td>';
                     echo '<td>' . h((string) $row['email']) . '</td>';
                     if ($type === 'writer') {
@@ -340,7 +341,8 @@ final class WritList
                         }
                         echo '<input type="submit" name="save_admin_facilities" class="lt_button small" value="Save"></form></td>';
                     }
-                    echo '<td>' . button('Edit', 'Edit account', 'account.php?u=' . $id, 'editNoteButton') . '</td>';
+                    echo '<td class="account-actions">' . button('Meta', 'Login and authenticator status', 'meta.php?u=' . $id, 'editNoteButton')
+                        . button('Edit', 'Change password and account', 'account.php?u=' . $id, 'editNoteButton') . '</td>';
                     echo '<td class="bulk_check"><input type="checkbox" form="bulk_actions" name="bulk_' . $id . '" value="' . $id . '"></td>';
                     echo '</tr>';
                     $cc = $cc === 'lr' ? 'dr' : 'lr';
@@ -445,6 +447,7 @@ final class WritList
                 echo '</span>';
                 echo '<button type="button" class="act_ltgray small" id="bulk_actions_btn" onclick="showBulkActions()">Actions &#9660;</button>';
                 echo '</form></div>';
+                echo browser_save_mount('note');
                 echo '<table class="list bulk lt sans"><tbody><tr><th>Type</th><th>When</th><th>Title</th><th>Preview</th><th></th><th></th><th class="bulk_check"></th></tr>';
                 $cc = 'lr';
                 foreach ($rows as $n) {
@@ -489,6 +492,7 @@ final class WritList
             $params,
             'SELECT n.* FROM notes n WHERE ' . implode(' AND ', $where) . ' ORDER BY ' . $order,
             function (array $rows) {
+                echo browser_save_mount('note');
                 echo '<table class="list lt sans"><tbody><tr><th>When</th><th>Title</th><th>Preview</th><th></th></tr>';
                 $cc = 'lr';
                 foreach ($rows as $n) {
@@ -539,6 +543,7 @@ final class WritList
              LEFT JOIN users u ON u.id = COALESCE(NULLIF(n.editor_set_writer_id, 0), n.writer_id)
              WHERE ' . implode(' AND ', $where) . ' ORDER BY ' . $order,
             function (array $rows) {
+                echo browser_save_mount('note');
                 echo '<table class="list lt sans"><tbody><tr><th>Writer</th><th>When</th><th>Title</th><th>Preview</th><th></th></tr>';
                 $cc = 'lr';
                 foreach ($rows as $n) {
@@ -642,6 +647,7 @@ final class WritList
                 echo '</span>';
                 echo '<button type="button" class="act_ltgray small" id="bulk_actions_btn" onclick="showBulkActions()">Actions &#9660;</button>';
                 echo '</form></div>';
+                echo browser_save_mount('test');
                 echo '<table class="list bulk lt sans"><tbody><tr><th>Title</th><th>Status</th><th></th><th class="bulk_check"></th></tr>';
                 $cc = 'lr';
                 foreach ($rows as $t) {
@@ -679,6 +685,7 @@ final class WritList
             $params,
             'SELECT n.* FROM notes n WHERE ' . implode(' AND ', $where) . ' ORDER BY ' . $order,
             function (array $rows) {
+                echo browser_save_mount('note');
                 echo '<table class="list lt sans"><tbody><tr><th>When</th><th>Title</th><th>Preview</th><th></th></tr>';
                 $cc = 'lr';
                 foreach ($rows as $n) {
@@ -715,6 +722,7 @@ final class WritList
              LEFT JOIN users u ON u.id = w.writer_id
              WHERE " . implode(' AND ', $where) . " ORDER BY {$order}",
             function (array $rows) {
+                echo browser_save_mount('writ');
                 echo '<table class="list writ lt sans"><tbody><tr><th></th><th>Work</th><th>Title</th><th>Status</th><th>Writer</th></tr>';
                 $cc = 'lr';
                 foreach ($rows as $w) {
@@ -815,6 +823,7 @@ final class WritList
                 if ($mode !== 'observer') {
                     $this->bulkBar($mode, $status, $this->app->auth->id(), $whereAmI);
                 }
+                echo browser_save_mount('writ');
                 echo '<table class="list writ lt sans"><tbody><tr><th></th><th>Work</th><th>Title</th>';
                 if ($mode === 'writer') {
                     echo '<th>Block</th><th>Status</th><th>Edits</th><th>Score</th>';

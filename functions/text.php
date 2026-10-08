@@ -113,3 +113,74 @@ function normalize_answer(string $s): string
     $s = preg_replace("/[^\p{L}\p{N} ]+/u", '', $s) ?? $s;
     return $s;
 }
+
+function db_call(callable $fn): bool
+{
+    try {
+        $fn();
+        return true;
+    } catch (Throwable $e) {
+        return false;
+    }
+}
+
+/** @param array<string,mixed> $item */
+function browser_save_remember(array $item): void
+{
+    $item['at'] = (int) ($item['at'] ?? time());
+    $json = json_encode($item, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS);
+    if (!is_string($json) || $json === '') {
+        return;
+    }
+    $cookie = strlen($json) <= 3500 ? $json : json_encode([
+        'kind' => (string) ($item['kind'] ?? ''),
+        'id' => $item['id'] ?? 0,
+        'title' => (string) ($item['title'] ?? ''),
+        'href' => (string) ($item['href'] ?? ''),
+        'at' => $item['at'],
+        'local' => 1,
+    ], JSON_UNESCAPED_UNICODE);
+    if (!is_string($cookie)) {
+        return;
+    }
+    setcookie('winston99_bs', $cookie, [
+        'expires' => time() + 86400 * 400,
+        'path' => '/',
+        'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+        'httponly' => false,
+        'samesite' => 'Lax',
+    ]);
+    $_COOKIE['winston99_bs'] = $cookie;
+}
+
+/** @param array<string,mixed> $item */
+function browser_save_script(array $item): string
+{
+    $json = json_encode($item, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS);
+    if (!is_string($json)) {
+        return '';
+    }
+    return '<script>if (window.pwRememberBrowser) pwRememberBrowser(' . $json . ');</script>';
+}
+
+function browser_save_mount(string $kind): string
+{
+    $kind = htmlspecialchars($kind, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    return '<div class="browser-save-mount" data-kind="' . $kind . '"></div>';
+}
+
+function msg_warning(string $text): string
+{
+    return '<p class="sans warning">' . h($text) . '</p>';
+}
+
+function msg_error(string $text): string
+{
+    return '<p class="sans error">' . h($text) . '</p>';
+}
+
+function msg_ok(string $text): string
+{
+    return '<p class="sans noticegreen noticehide">' . h($text) . '</p>';
+}
+

@@ -25,6 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $app->csrf->check() && isset($_POST
             $app->redirect('locker.php');
         } catch (InvalidArgumentException $e) {
             $form->fail('email', $e->getMessage());
+        } catch (Throwable $e) {
+            $app->view->setFlash('No database connection; changes not saved!', 'error');
         }
     }
 }
@@ -32,11 +34,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $app->csrf->check() && isset($_POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $app->csrf->check() && isset($_POST['save_theme'])) {
     $tid = preg_replace('/[^a-z0-9\-]/', '', (string) ($_POST['theme'] ?? '')) ?? '';
     if ($tid !== '' && str_starts_with($tid, 'theme-') && is_file(__DIR__ . '/css/' . $tid . '.css')) {
-        $app->user->saveTheme($uid, $tid);
-        winston99_set_theme_cookie($tid);
-        $app->audit->record($uid, 'theme', $tid);
-        $app->view->setFlash('Theme saved.');
-        $app->redirect('locker.php');
+        if (!db_call(function () use ($app, $uid, $tid) {
+            $app->user->saveTheme($uid, $tid);
+        })) {
+            $app->view->setFlash('No database connection; changes not saved!', 'error');
+        } else {
+            winston99_set_theme_cookie($tid);
+            $app->audit->record($uid, 'theme', $tid);
+            $app->view->setFlash('Theme saved.');
+            $app->redirect('locker.php');
+        }
     }
 }
 

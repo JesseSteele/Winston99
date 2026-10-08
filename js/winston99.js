@@ -45,11 +45,155 @@
     });
   };
 
+  function pwEsc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"');
+  }
+
+  function pwCookie(name) {
+    var parts = document.cookie ? document.cookie.split('; ') : [];
+    for (var i = 0; i < parts.length; i++) {
+      var p = parts[i];
+      var eq = p.indexOf('=');
+      if (eq > 0 && decodeURIComponent(p.slice(0, eq)) === name) {
+        return decodeURIComponent(p.slice(eq + 1));
+      }
+    }
+    return '';
+  }
+
+  function pwSetCookie(name, value) {
+    document.cookie = encodeURIComponent(name) + '=' + encodeURIComponent(value)
+      + '; Max-Age=31536000; Path=/; SameSite=Lax';
+  }
+
+  function pwClearCookie(name) {
+    document.cookie = encodeURIComponent(name) + '=; Max-Age=0; Path=/; SameSite=Lax';
+  }
+
+  function pwBrowserLoad() {
+    var all = {};
+    try {
+      var raw = localStorage.getItem('winston99_browser_save');
+      if (raw) all = JSON.parse(raw) || {};
+    } catch (e) { all = {}; }
+    if (all && Object.keys(all).length) return all;
+    var head = pwCookie('winston99_bs');
+    if (head.indexOf('chunks:') === 0) {
+      var n = parseInt(head.slice(7), 10) || 0;
+      var json = '';
+      for (var i = 0; i < n; i++) json += pwCookie('winston99_bs_' + i);
+      try { all = JSON.parse(json) || {}; } catch (e2) { all = {}; }
+    } else if (head) {
+      try {
+        var one = JSON.parse(head);
+        if (one && one.kind) all[one.kind + ':' + one.id] = one;
+        else if (one && typeof one === 'object') all = one;
+      } catch (e3) { all = {}; }
+    }
+    return all || {};
+  }
+
+  function pwBrowserWrite(all) {
+    var json = '{}';
+    try { json = JSON.stringify(all); } catch (e) { return; }
+    try { localStorage.setItem('winston99_browser_save', json); } catch (e2) {}
+    var parts = document.cookie ? document.cookie.split('; ') : [];
+    for (var i = 0; i < parts.length; i++) {
+      var name = decodeURIComponent(parts[i].split('=')[0]);
+      if (name === 'winston99_bs' || name.indexOf('winston99_bs_') === 0) pwClearCookie(name);
+    }
+    var max = 3200;
+    if (json.length <= max) {
+      pwSetCookie('winston99_bs', json);
+      return;
+    }
+    var slim = {};
+    Object.keys(all).forEach(function (k) {
+      var it = all[k] || {};
+      slim[k] = { kind: it.kind, id: it.id, title: it.title, href: it.href, at: it.at };
+    });
+    var slimJson = JSON.stringify(slim);
+    if (slimJson.length <= max) {
+      pwSetCookie('winston99_bs', slimJson);
+      return;
+    }
+    var chunks = [];
+    for (var c = 0; c < json.length && chunks.length < 8; c += max) chunks.push(json.slice(c, c + max));
+    pwSetCookie('winston99_bs', 'chunks:' + chunks.length);
+    chunks.forEach(function (part, n) { pwSetCookie('winston99_bs_' + n, part); });
+  }
+
+  window.pwRememberBrowser = function (item) {
+    if (!item || !item.kind) return;
+    var all = pwBrowserLoad();
+    item.at = item.at || Date.now();
+    all[item.kind + ':' + String(item.id == null ? '0' : item.id)] = item;
+    pwBrowserWrite(all);
+    pwPaintBrowserSaves();
+  };
+
+  window.pwForgetBrowser = function (kind, id) {
+    var all = pwBrowserLoad();
+    delete all[kind + ':' + String(id)];
+    pwBrowserWrite(all);
+    pwPaintBrowserSaves();
+  };
+
+  function pwPaintBrowserSaves() {
+    var mounts = document.querySelectorAll('.browser-save-mount');
+    if (!mounts.length) return;
+    var all = pwBrowserLoad();
+    for (var m = 0; m < mounts.length; m++) {
+      var mount = mounts[m];
+      var kind = mount.getAttribute('data-kind');
+      var rows = [];
+      Object.keys(all).forEach(function (k) {
+        if (all[k] && all[k].kind === kind) rows.push(all[k]);
+      });
+      rows.sort(function (a, b) { return (b.at || 0) - (a.at || 0); });
+      if (!rows.length) { mount.innerHTML = ''; continue; }
+      var html = '<table class="list lt sans"><tbody>';
+      for (var i = 0; i < rows.length; i++) {
+        var it = rows[i];
+        var cc = i % 2 ? 'dr' : 'lr';
+        html += '<tr class="' + cc + ' browser_save"><td><span class="warning sans">Browser</span></td><td><a class="listed_note" href="'
+          + pwEsc(it.href || '#') + '">' + pwEsc(it.title || ('#' + it.id))
+          + '</a> <small class="dk">saved in this browser</small></td></tr>';
+      }
+      html += '</tbody></table>';
+      mount.innerHTML = html;
+    }
+  }
+
+  function pwSnapshot(form) {
+    var fields = {};
+    if (!form) return fields;
+    var fd = new FormData(form);
+    fd.forEach(function (v, k) {
+      if (typeof v === 'string') fields[k] = v;
+    });
+    return fields;
+  }
+
+  function pwHoldFromForm(form, warning) {
+    if (!form) return;
+    var kind = form.getAttribute('data-browser-kind') || '';
+    var id = form.getAttribute('data-browser-id') || '0';
+    if (!kind) return;
+    var fields = pwSnapshot(form);
+    pwRememberBrowser({
+      kind: kind,
+      id: id,
+      title: fields.title || fields.work || (kind + ' ' + id),
+      href: window.location.pathname.split('/').pop() + window.location.search,
+      warning: warning,
+      fields: fields
+    });
+  }
+
   var pwSaveRetry = {};
-  var pwWaitMarkup = '<span class="pw-wait sans">'
-    + '<svg class="pw-spin" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">'
-    + '<circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="40 16"/>'
-    + '</svg> Waiting for the database…</span>';
+  var pwDbWarn = "Can't connect to the database; saved in this browser.";
 
   function pwRetryable(x, j, raw) {
     if (j && j.retry) return true;
@@ -83,6 +227,7 @@
             clearTimeout(pwSaveRetry[formId]);
             pwSaveRetry[formId] = null;
           }
+          if (j.forget && j.forget.kind) pwForgetBrowser(j.forget.kind, j.forget.id);
           if (box) {
             box.innerHTML = '<span class="noticegreen noticehide sans">' + (j.msg || 'Saved') + '</span>';
           }
@@ -94,22 +239,29 @@
           window.onbeforeunload = null;
           return;
         }
-        if (pwRetryable(x, j, t)) {
-          if (box) box.innerHTML = pwWaitMarkup;
+        if (j && j.browser) {
+          pwRememberBrowser(j);
+          if (box) box.innerHTML = '<span class="warning sans">' + pwEsc(j.warning || pwDbWarn) + '</span>';
           window.onbeforeunload = function () { return ''; };
-          pwSaveRetry[formId] = setTimeout(send, 10000);
+          return;
+        }
+        if (pwRetryable(x, j, t)) {
+          pwHoldFromForm(form, pwDbWarn);
+          if (box) box.innerHTML = '<span class="warning sans">' + pwEsc(pwDbWarn) + '</span>';
+          window.onbeforeunload = function () { return ''; };
           return;
         }
         if (box) {
+          var cls = (j && j.cls) || 'noticered';
           box.innerHTML = (j && j.error)
-            ? '<span class="noticered sans">' + j.error + '</span>'
+            ? '<span class="' + cls + ' sans">' + pwEsc(j.error) + '</span>'
             : (t || '<span class="noticered sans">Save failed</span>');
         }
       };
       x.onerror = function () {
-        if (box) box.innerHTML = pwWaitMarkup;
+        pwHoldFromForm(form, pwDbWarn);
+        if (box) box.innerHTML = '<span class="warning sans">' + pwEsc(pwDbWarn) + '</span>';
         window.onbeforeunload = function () { return ''; };
-        pwSaveRetry[formId] = setTimeout(send, 10000);
       };
       x.send(fd);
     }
@@ -151,13 +303,14 @@
         cb.checked = !cb.checked;
         if (typeof j.off === 'boolean') cb.checked = j.off;
         if (box) {
-          var err = (j && j.error_html) ? j.error_html : ((j && j.error) || 'Save failed');
-          box.innerHTML = '<span class="noticered sans">' + err + '</span>';
+          var cls = (j && j.cls) || 'error';
+          var err = (j && j.error) || 'No database connection; changes not saved!';
+          box.innerHTML = '<span class="' + cls + ' sans">' + pwEsc(err) + '</span>';
         }
       };
       x.onerror = function () {
         cb.checked = !cb.checked;
-        if (box) box.innerHTML = '<span class="noticered sans">Save failed</span>';
+        if (box) box.innerHTML = '<span class="error sans">No database connection; changes not saved!</span>';
       };
       x.send(fd);
     });
@@ -222,6 +375,12 @@
           var j = null;
           try { j = JSON.parse(x.responseText || ''); } catch (e) { j = null; }
           if (j && j.ok) pwOauthSetRow(table, p, false);
+          else {
+            var note = document.createElement('p');
+            note.className = 'sans error';
+            note.textContent = (j && j.error) || 'No database connection; changes not saved!';
+            table.parentNode.insertBefore(note, table);
+          }
         };
         x.send(fd);
       }
@@ -502,6 +661,7 @@
         }
         link.href = 'css/' + id + '.css';
       }
+      document.documentElement.classList.toggle('tone-light', (window.pwLightThemes || []).indexOf(id) !== -1);
       if (keep) {
         var same = id === saved;
         keep.disabled = same;
@@ -512,8 +672,12 @@
     apply();
   }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', pwThemeLive);
+    document.addEventListener('DOMContentLoaded', function () {
+      pwThemeLive();
+      pwPaintBrowserSaves();
+    });
   } else {
     pwThemeLive();
+    pwPaintBrowserSaves();
   }
 })();

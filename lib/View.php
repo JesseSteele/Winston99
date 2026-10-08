@@ -18,7 +18,9 @@ final class View
         $u = $this->app->auth->user();
         $dash = $this->resolveDash($u, $active, $dash);
         echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">' . "\n";
-        echo '<html xmlns="http://www.w3.org/1999/xhtml"><head>';
+        $theme = winston99_theme_id($u);
+        $tone = winston99_theme_tone($theme);
+        echo '<html xmlns="http://www.w3.org/1999/xhtml"' . ($tone === 'light' ? ' class="tone-light"' : '') . '><head>';
         echo '<link rel="shortcut icon" type="image/png" href="favicon.png"/>';
         echo '<meta name="robots" content="noindex">';
         echo '<meta charset="utf-8">';
@@ -31,6 +33,7 @@ final class View
         if (is_file($themeFile)) {
             echo '<link rel="stylesheet" id="winston99-theme-css" href="css/' . h($theme) . '.css?v=' . h(winston99_asset_v($themeFile)) . '" type="text/css" />';
         }
+        echo '<script>window.pwLightThemes=' . json_encode(winston99_light_themes()) . ';</script>';
         echo '<script src="js/winston99.js?v=' . h($jsV) . '"></script>';
         echo '<meta http-equiv="Cache-Control" content="no-cache" />';
         echo '<meta http-equiv="Pragma" content="no-cache" />';
@@ -61,7 +64,7 @@ final class View
         echo '</div></div></body></html>';
     }
 
-    public function setFlash(string $msg, bool $ok = true): void
+    public function setFlash(string $msg, bool|string $ok = true): void
     {
         $_SESSION['act_message'] = $this->notice($msg, $ok);
     }
@@ -195,9 +198,14 @@ final class View
         }
     }
 
-    public function notice(string $msg, bool $ok = true): string
+    public function notice(string $msg, bool|string $ok = true): string
     {
-        $c = $ok ? 'noticegreen' : 'noticered';
+        $c = match ($ok) {
+            true, 'ok' => 'noticegreen',
+            'error' => 'error',
+            'warning' => 'warning',
+            default => 'noticered',
+        };
         return '<p class="sans ' . $c . '">' . h($msg) . '</p>';
     }
 }

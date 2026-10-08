@@ -34,6 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $app->csrf->check()) {
                 $app->redirect('account.php?u=' . $id);
             } catch (InvalidArgumentException $e) {
                 $contact->fail('email', $e->getMessage());
+            } catch (Throwable $e) {
+                $app->view->setFlash('No database connection; changes not saved!', 'error');
             }
         }
     } elseif (isset($_POST['set_password'])) {
@@ -44,16 +46,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $app->csrf->check()) {
             $passForm->fail('pass1', 'New passwords must match and be at least 8 characters.');
             $passForm->fail('pass2', 'New passwords must match and be at least 8 characters.');
         } else {
-            $app->user->setPassword($id, $p1);
-            $app->audit->record($id, 'password', 'set by staff');
-            $app->view->setFlash('Password set. Authenticator still applies if it is on.');
-            $app->redirect('account.php?u=' . $id);
+            if (!db_call(function () use ($app, $id, $p1) {
+                $app->user->setPassword($id, $p1);
+            })) {
+                $app->view->setFlash('No database connection; changes not saved!', 'error');
+            } else {
+                $app->audit->record($id, 'password', 'set by staff');
+                $app->view->setFlash('Password set. Authenticator still applies if it is on.');
+                $app->redirect('account.php?u=' . $id);
+            }
         }
     } elseif (isset($_POST['totp_off'])) {
-        $app->user->setTotp($id, null, false);
-        $app->audit->record($id, 'totp_off', 'removed by staff');
-        $app->view->setFlash('Authenticator removed.', false);
-        $app->redirect('account.php?u=' . $id);
+        if (!db_call(function () use ($app, $id) {
+            $app->user->setTotp($id, null, false);
+        })) {
+            $app->view->setFlash('No database connection; changes not saved!', 'error');
+        } else {
+            $app->audit->record($id, 'totp_off', 'removed by staff');
+            $app->view->setFlash('Authenticator removed.', false);
+            $app->redirect('account.php?u=' . $id);
+        }
     } elseif (isset($_POST['save_notify'])) {
         $keys = Notify::keysFor($w['type']);
         $in = [];
@@ -62,10 +74,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $app->csrf->check()) {
             $in[$k] = !empty($_POST['inapp'][$k]);
             $em[$k] = !empty($_POST['email'][$k]);
         }
-        $app->user->savePrefs($id, ['inapp' => $in, 'email' => $em]);
-        $app->audit->record($id, 'notify', 'prefs');
-        $app->view->setFlash('Notification settings saved.');
-        $app->redirect('account.php?u=' . $id);
+        if (!db_call(function () use ($app, $id, $in, $em) {
+            $app->user->savePrefs($id, ['inapp' => $in, 'email' => $em]);
+        })) {
+            $app->view->setFlash('No database connection; changes not saved!', 'error');
+        } else {
+            $app->audit->record($id, 'notify', 'prefs');
+            $app->view->setFlash('Notification settings saved.');
+            $app->redirect('account.php?u=' . $id);
+        }
     }
 }
 
@@ -83,7 +100,7 @@ $type = (string) $w['type'];
 };
 $app->view->start($w['name'], $active, $dash);
 echo '<h2 class="lt">Edit account · ' . h($w['name']) . '</h2>';
-echo '<p class="sans dk">' . h($w['username']) . ' · ' . h($type) . '</p>';
+echo '<p class="sans dk">' . h($w['username']) . ' · ' . h($type) . ' · <a href="meta.php?u=' . $id . '">Meta</a></p>';
 
 echo '<form method="post" class="sans">' . $app->csrf->field();
 echo '<input type="hidden" name="u" value="' . $id . '">';
@@ -111,30 +128,6 @@ if (!empty($w['totp_enabled'])) {
     echo '<p class="sans dk">No authenticator.</p>';
 }
 
-$pks = $app->passkey->list($id);
-echo '<h3 class="lt">Passkeys</h3>';
-if (!$pks) {
-    echo '<p class="sans dk">None. Staff cannot add or remove passkeys.</p>';
-} else {
-    echo '<p class="sans dk">Visible only. Staff cannot remove passkeys.</p><ul class="sans">';
-    foreach ($pks as $pk) {
-        echo '<li>' . h((string) ($pk['name'] ?? 'Passkey')) . ' <small class="dk">' . h((string) ($pk['created_at'] ?? '')) . '</small></li>';
-    }
-    echo '</ul>';
-}
-
-$oauths = $app->oauth->list($id);
-echo '<h3 class="lt">Linked logins</h3>';
-if (!$oauths) {
-    echo '<p class="sans dk">None. Staff cannot connect or disconnect these.</p>';
-} else {
-    echo '<p class="sans dk">Visible only. Staff cannot disconnect these.</p><ul class="sans">';
-    foreach ($oauths as $row) {
-        echo '<li>' . h((string) $row['provider']) . ' · ' . h((string) ($row['email'] ?? '')) . '</li>';
-    }
-    echo '</ul>';
-}
-
 $keys = Notify::keysFor($type);
 $labels = Notify::catalog();
 $prefs = $app->user->prefs($w);
@@ -148,31 +141,4 @@ foreach ($keys as $k) {
     echo '<td><input type="checkbox" name="email[' . h($k) . ']" value="1"' . (!empty($prefs['email'][$k]) ? ' checked' : '') . '></td></tr>';
 }
 echo '</table><p><input type="submit" name="save_notify" class="lt_button" value="Save notifications"></p></form>';
-
-if ($app->auth->is('superintendent')) {
-    echo '<h3 class="lt">Account log</h3>';
-    $log = $app->audit->forUser($id);
-    if (!$log) {
-        echo empty_list();
-    } else {
-        echo '<table class="list sans lt"><tr><th>When</th><th>Who</th><th>Action</th><th>Detail</th><th>IP</th></tr>';
-        $cc = 'lr';
-        foreach ($log as $row) {
-            $who = '—';
-            $aid = (int) ($row['actor_id'] ?? 0);
-            if ($aid === $id) {
-                $who = 'Self';
-            } elseif ((string) ($row['actor_name'] ?? '') !== '') {
-                $who = (string) $row['actor_name'];
-            }
-            echo '<tr class="' . $cc . '"><td>' . h((string) $row['created_at']) . '</td>';
-            echo '<td>' . h($who) . '</td>';
-            echo '<td>' . h(Audit::label((string) $row['action'])) . '</td>';
-            echo '<td>' . h((string) ($row['detail'] ?? '')) . '</td>';
-            echo '<td>' . h((string) ($row['ip'] ?? '')) . '</td></tr>';
-            $cc = $cc === 'lr' ? 'dr' : 'lr';
-        }
-        echo '</table>';
-    }
-}
 $app->view->end();
