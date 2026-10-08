@@ -36,6 +36,17 @@ final class Audit
         );
     }
 
+    public function lastLogin(int $userId): ?array
+    {
+        if (!$this->app->db || !$this->app->db->tableExists('account_log')) {
+            return null;
+        }
+        return $this->app->db->one(
+            "SELECT * FROM account_log WHERE user_id = ? AND action = 'login' ORDER BY id DESC LIMIT 1",
+            [$userId]
+        );
+    }
+
     public function forUser(int $userId, int $limit = 80): array
     {
         if (!$this->app->db || !$this->app->db->tableExists('account_log')) {

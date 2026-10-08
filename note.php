@@ -135,7 +135,7 @@ foreach ($writers as $wr) {
 }
 
 $checked = $assignWanted ? ' checked' : '';
-echo '<form id="editform" method="post">' . $app->csrf->field();
+echo '<form id="editform" method="post" data-browser-kind="note" data-browser-id="' . (int) $nid . '">' . $app->csrf->field();
 echo '<input type="hidden" name="note_id" value="' . $nid . '">';
 echo '<input type="hidden" name="user_id" value="' . $uid . '">';
 if ($isEditor && $canEdit) {

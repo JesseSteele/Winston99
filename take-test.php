@@ -11,16 +11,31 @@ if (!$w || (int) $w['writer_id'] !== $app->auth->id() || $w['kind'] !== 'test') 
 $t = $app->test->find((int) $w['test_id']);
 $items = json_arr($t['parsed'] ?? '[]');
 
+$browserHold = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $app->csrf->check() && isset($_POST['submit_test']) && $w['draft_status'] !== 'submitted') {
     $answers = $_POST['q'] ?? [];
     $g = $app->test->parser->grade($items, $answers);
     $outof = max(1, (int) $g['auto_possible']);
-    $app->writ->saveTestAnswers($wid, $app->auth->id(), $answers, (int) $g['auto_got'], $outof);
-    $app->notify->toEditorOf($app->auth->id(), 'new_writ', 'Test submitted: ' . $t['title'], 'review.php?w=' . $wid);
-    $app->redirect('take-test.php?w=' . $wid);
+    if ($app->writ->saveTestAnswers($wid, $app->auth->id(), is_array($answers) ? $answers : [], (int) $g['auto_got'], $outof)) {
+        $app->notify->toEditorOf($app->auth->id(), 'new_writ', 'Test submitted: ' . $t['title'], 'review.php?w=' . $wid);
+        $app->redirect('take-test.php?w=' . $wid);
+    }
+    $item = [
+        'kind' => 'test',
+        'id' => $wid,
+        'title' => (string) ($t['title'] ?? 'Test'),
+        'href' => 'take-test.php?w=' . $wid,
+        'warning' => 'Saved in this browser until the database connection is restored, then try again.',
+        'fields' => ['q' => $answers],
+    ];
+    browser_save_remember($item);
+    $browserHold = msg_error('Not submitted.') . msg_warning($item['warning']) . browser_save_script($item);
 }
 
 $app->view->start('Test', 'writs');
+if ($browserHold !== '') {
+    echo $browserHold;
+}
 echo '<h2 class="lt">' . h($t['title'] ?? 'Test') . '</h2>';
 if ($w['draft_status'] === 'submitted') {
     echo '<p class="sans noticegreen">Submitted. Auto-score ' . (int) $w['test_auto_score'] . '/' . (int) $w['outof'] . ' (short answers graded by your editor).</p>';

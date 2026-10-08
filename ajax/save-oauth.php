@@ -20,5 +20,9 @@ $oauths = $app->oauth->list($id);
 if (!$app->user->passwordLoginOn($u) && $pks === [] && count($oauths) < 2) {
     $app->json(['ok' => false, 'error' => 'Keep at least one way in.'], 400);
 }
-$app->oauth->unlink($id, $p);
+try {
+    $app->oauth->unlink($id, $p);
+} catch (Throwable $e) {
+    $app->json(['ok' => false, 'cls' => 'error', 'error' => 'No database connection; changes not saved!']);
+}
 $app->json(['ok' => true, 'provider' => $p, 'linked' => false]);

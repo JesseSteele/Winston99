@@ -51,7 +51,7 @@ $app->view->start('Test', 'tests', 'editor');
 echo '<h2 class="lt">Compose test</h2>';
 echo '<p>' . post_button('New test +', 'Start another test', 'test.php', 'new_test', '1', 'newNoteButton', $app->csrf->token()) . '</p>';
 echo '<p class="sans dk"><code>I:</code> heading · <code>1) MC|FI|SA|TF</code> · <code>[v]</code>/<code>[x]</code> · fill-in <code>___a || b___</code> (OR) or <code>___a |& b___</code> (AND/OR) · <code>T:</code>/<code>F:</code> is the key. Numbers resequence on save.</p>';
-echo '<form id="testform">' . $app->csrf->field();
+echo '<form id="testform" data-browser-kind="test" data-browser-id="' . (int) $tid . '">' . $app->csrf->field();
 echo '<input type="hidden" name="test_id" value="' . (int) $tid . '">';
 echo '<p class="field sans"><label for="title">Title</label><input name="title" id="title" value="' . h($title) . '"></p>';
 echo '<p class="field sans"><label for="block">Block</label>';

@@ -22,13 +22,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $app->csrf->check()) {
         $form->fail('name', 'Name is required.');
     }
     if ($form->ok()) {
-        $app->block->save($bid, [
-            'name' => $form->get('name'),
-            'code' => $form->get('code'),
-            'status' => $form->get('status'),
-        ]);
-        $app->view->setFlash('Block saved.');
-        $app->redirect($back);
+        if (!db_call(function () use ($app, $bid, $form) {
+            $app->block->save($bid, [
+                'name' => $form->get('name'),
+                'code' => $form->get('code'),
+                'status' => $form->get('status'),
+            ]);
+        })) {
+            $app->view->setFlash('No database connection; changes not saved!', 'error');
+        } else {
+            $app->view->setFlash('Block saved.');
+            $app->redirect($back);
+        }
     }
 }
 if (!$form->bad()) {

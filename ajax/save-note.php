@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-$import = ['auth', 'csrf', 'text', 'note'];
+$import = ['auth', 'csrf', 'text', 'note', 'html'];
 require dirname(__DIR__) . '/lib/boot.php';
 $app->auth->requireUser();
 if (!$app->csrf->check()) {
@@ -24,5 +24,17 @@ if ($app->auth->atLeast('editor')) {
         $extra['editor_set_block'] = (int) $_POST['editor_set_block'];
     }
 }
-$app->note->saveBody($nid, clean_body($_POST['body'] ?? ''), $extra);
-$app->json(['ok' => true, 'msg' => 'Saved']);
+$body = clean_body($_POST['body'] ?? '');
+if (!$app->note->saveBody($nid, $body, $extra)) {
+    $item = [
+        'kind' => 'note',
+        'id' => $nid,
+        'title' => note_heading($body),
+        'href' => 'note.php?n=' . $nid,
+        'warning' => "Can't connect to the database; saved in this browser.",
+        'fields' => ['body' => $body],
+    ];
+    browser_save_remember($item);
+    $app->json(['ok' => false, 'browser' => true] + $item);
+}
+$app->json(['ok' => true, 'msg' => 'Saved', 'forget' => ['kind' => 'note', 'id' => $nid]]);

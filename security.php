@@ -4,6 +4,7 @@ $import = ['auth', 'csrf', 'view', 'html', 'totp', 'passkey', 'user', 'oauth', '
 require __DIR__ . '/lib/boot.php';
 $u = $app->auth->requireUser();
 $totpForm = new Form();
+$dbErr = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $app->csrf->check()) {
     if (isset($_POST['totp_start'])) {
@@ -11,18 +12,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $app->csrf->check()) {
     } elseif (isset($_POST['totp_confirm']) && !empty($_SESSION['totp_pending'])) {
         $totpForm->grab($_POST, 'code');
         if ($app->totp->verify($_SESSION['totp_pending'], $totpForm->get('code'))) {
-            $app->user->setTotp($app->auth->id(), $_SESSION['totp_pending'], true);
-            unset($_SESSION['totp_pending']);
-            $u = $app->user->find($app->auth->id());
-            $app->audit->record($app->auth->id(), 'totp_on', 'self');
-            $totpForm = new Form();
+            $secret = $_SESSION['totp_pending'];
+            if (!db_call(function () use ($app, $secret) {
+                $app->user->setTotp($app->auth->id(), $secret, true);
+            })) {
+                $dbErr = 'No database connection; changes not saved!';
+            } else {
+                unset($_SESSION['totp_pending']);
+                $u = $app->user->find($app->auth->id());
+                $app->audit->record($app->auth->id(), 'totp_on', 'self');
+                $totpForm = new Form();
+            }
         } else {
             $totpForm->fail('code', 'That code did not match.');
         }
     } elseif (isset($_POST['totp_off'])) {
-        $app->user->setTotp($app->auth->id(), null, false);
-        $u = $app->user->find($app->auth->id());
-        $app->audit->record($app->auth->id(), 'totp_off', 'self');
+        if (!db_call(function () use ($app) {
+            $app->user->setTotp($app->auth->id(), null, false);
+        })) {
+            $dbErr = 'No database connection; changes not saved!';
+        } else {
+            $u = $app->user->find($app->auth->id());
+            $app->audit->record($app->auth->id(), 'totp_off', 'self');
+        }
     } elseif (isset($_POST['id'], $_POST['spki'])) {
         $app->passkey->register($app->auth->id(), (string) $_POST['id'], (string) $_POST['spki'], (string) ($_POST['name'] ?? 'Passkey'));
         $app->redirect('security.php');
@@ -71,6 +83,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $app->csrf->check()) {
 }
 
 $app->view->start('Security', 'locker', 'my');
+if ($dbErr !== '') {
+    echo '<p class="sans error">' . h($dbErr) . '</p>';
+}
 if (!empty($_SESSION['oauth_err'])) {
     echo '<p class="sans noticered">' . h((string) $_SESSION['oauth_err']) . '</p>';
     unset($_SESSION['oauth_err']);

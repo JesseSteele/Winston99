@@ -166,6 +166,7 @@ function dash_writ_table(App $app, array $rows, string $mode): void
         echo empty_list();
         return;
     }
+    echo browser_save_mount('writ');
     echo '<table class="list writ lt sans"><tbody><tr><th></th><th>Work</th><th>Title</th><th>Status</th>';
     if ($mode !== 'writer') {
         echo '<th>Writer</th>';

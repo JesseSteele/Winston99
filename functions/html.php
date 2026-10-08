@@ -46,6 +46,28 @@ function winston99_themes(): array
     return $out;
 }
 
+function winston99_theme_tone(string $id): string
+{
+    $file = dirname(__DIR__) . '/css/' . $id . '.css';
+    if (!is_file($file)) {
+        return 'dark';
+    }
+    $raw = (string) file_get_contents($file);
+    return preg_match('/@tone\s+light\b/', $raw) ? 'light' : 'dark';
+}
+
+/** @return list<string> */
+function winston99_light_themes(): array
+{
+    $ids = [];
+    foreach (array_keys(winston99_themes()) as $id) {
+        if (winston99_theme_tone($id) === 'light') {
+            $ids[] = $id;
+        }
+    }
+    return $ids;
+}
+
 function winston99_theme_id(?array $user): string
 {
     $want = '';

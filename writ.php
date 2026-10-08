@@ -18,8 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_writ']) && $app->
 $wid = (int) ($_GET['w'] ?? $_POST['writ_id'] ?? 0);
 $w = $wid ? $app->writ->find($wid) : null;
 
+$browserHold = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $w && $app->csrf->check() && isset($_POST['submit_draft'])) {
-    $app->writ->saveDraft($wid, $uid, [
+    $fields = [
         'title' => writ_title($_POST['title'] ?? ''),
         'work' => writ_work($_POST['work'] ?? '', $wid),
         'block_id' => (int) ($_POST['block'] ?? 0),
@@ -27,22 +28,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $w && $app->csrf->check() && isset(
         'draft' => clean_body($_POST['draft'] ?? ''),
         'draft_wordcount' => wordcount($_POST['draft'] ?? ''),
         'writing_time' => (int) ($_POST['writing_time'] ?? 0),
-    ]);
-    $app->writ->submitDraft($wid, $uid);
-    $app->notify->toEditorOf($uid, 'new_writ', 'Writ submitted: ' . writ_title($_POST['title'] ?? ''), 'review.php?w=' . $wid);
-    $app->notify->toObserversOf($uid, 'new_writ', 'Writ submitted: ' . writ_title($_POST['title'] ?? ''), 'writ.php?w=' . $wid);
-    $app->redirect('writ.php?w=' . $wid);
+    ];
+    $saved = $app->writ->saveDraft($wid, $uid, $fields);
+    $submitted = $saved && $app->writ->submitDraft($wid, $uid);
+    if ($submitted) {
+        $app->notify->toEditorOf($uid, 'new_writ', 'Writ submitted: ' . $fields['title'], 'review.php?w=' . $wid);
+        $app->notify->toObserversOf($uid, 'new_writ', 'Writ submitted: ' . $fields['title'], 'writ.php?w=' . $wid);
+        $app->redirect('writ.php?w=' . $wid);
+    }
+    $item = [
+        'kind' => 'writ',
+        'id' => $wid,
+        'title' => $fields['title'],
+        'href' => 'writ.php?w=' . $wid,
+        'warning' => 'Saved in this browser until the database connection is restored, then try again.',
+        'fields' => $fields,
+    ];
+    browser_save_remember($item);
+    $browserHold = msg_error('Not submitted.') . msg_warning($item['warning']) . browser_save_script($item);
+    $w['title'] = $fields['title'];
+    $w['work'] = $fields['work'];
+    $w['notes'] = $fields['notes'];
+    $w['draft'] = $fields['draft'];
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $w && $app->csrf->check() && isset($_POST['submit_correction'])) {
-    $app->writ->saveCorrection($wid, $uid, [
+    $fields = [
         'notes' => clean_body($_POST['notes'] ?? ''),
         'correction' => clean_body($_POST['correction'] ?? ''),
         'correction_wordcount' => wordcount($_POST['correction'] ?? ''),
-    ]);
-    $app->writ->submitCorrection($wid, $uid);
-    $app->notify->toEditorOf($uid, 'edited_writ', 'Correction submitted', 'review.php?w=' . $wid);
-    $app->redirect('writ.php?w=' . $wid);
+    ];
+    $saved = $app->writ->saveCorrection($wid, $uid, $fields);
+    $submitted = $saved && $app->writ->submitCorrection($wid, $uid);
+    if ($submitted) {
+        $app->notify->toEditorOf($uid, 'edited_writ', 'Correction submitted', 'review.php?w=' . $wid);
+        $app->redirect('writ.php?w=' . $wid);
+    }
+    $item = [
+        'kind' => 'writ',
+        'id' => $wid,
+        'title' => writ_title($w['title'] ?? ''),
+        'href' => 'writ.php?w=' . $wid,
+        'warning' => 'Saved in this browser until the database connection is restored, then try again.',
+        'fields' => $fields,
+    ];
+    browser_save_remember($item);
+    $browserHold = msg_error('Not submitted.') . msg_warning($item['warning']) . browser_save_script($item);
+    $w['notes'] = $fields['notes'];
+    $w['correction'] = $fields['correction'];
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $w && $app->csrf->check() && isset($_POST['new_comment'])) {
@@ -71,6 +104,9 @@ $active = match ($sess) {
     default => 'writs',
 };
 $app->view->start('Writ', $active, 'auto');
+if ($browserHold !== '') {
+    echo $browserHold;
+}
 if ($sess !== 'observer' && $sess !== 'editor' && $sess !== 'admin' && $sess !== 'super' && !$app->auth->is('observer')) {
     echo '<p>' . post_button('New writ +', 'Start writing something new', 'writ.php', 'new_writ', (string) $uid, 'newNoteButton', $app->csrf->token()) . '</p>';
 }
@@ -92,6 +128,7 @@ if ($w['kind'] === 'test' && $owner) {
 
 if ($owner && $w['draft_status'] === 'submitted') {
     echo '<p class="sans noticegreen">Submitted and waiting for review.</p>';
+    echo '<script>if (window.pwForgetBrowser) pwForgetBrowser("writ", ' . (int) $wid . ');</script>';
     echo writ_times($w);
     echo comments_markup($app->writ->comments($wid), $wid, $canComment, $uid, $app->csrf->token());
     $app->view->end();
@@ -147,7 +184,7 @@ if (!$owner) {
     exit;
 }
 
-echo '<form id="editform" method="post" onsubmit="offNavWarn();">' . $app->csrf->field();
+echo '<form id="editform" method="post" data-browser-kind="writ" data-browser-id="' . (int) $wid . '" onsubmit="offNavWarn();">' . $app->csrf->field();
 echo '<input type="hidden" name="writ_id" value="' . (int) $wid . '">';
 echo '<input type="hidden" name="user_form" value="' . (int) $uid . '">';
 echo '<p class="sans">Block</p><select class="formselect small" name="block" id="block" onchange="onNavWarn()">';

@@ -34,6 +34,10 @@ final class TestRepo
                 'UPDATE tests SET title=?, source=?, parsed=?, block_id=? WHERE id=? AND editor_id=?',
                 [$title, $rewritten, $parsed, $blockId, $id, $editorId]
             );
+            $row = $this->find($id);
+            if (!$row || (string) $row['source'] !== $rewritten || (int) $row['editor_id'] !== $editorId) {
+                throw new RuntimeException('Test was not stored.');
+            }
         } else {
             $this->app->db->run(
                 'INSERT INTO tests (editor_id, facility_id, block_id, title, source, parsed, status) VALUES (?,?,?,?,?,?,\'draft\')',

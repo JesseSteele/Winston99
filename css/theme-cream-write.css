@@ -1,4 +1,5 @@
 /* @theme Cream Write
+   @tone light
    Paper, not true white. Pink #f71771 only on links and hover, never as a page fill. */
 :root {
   --pw-frame: #cfc8c0;

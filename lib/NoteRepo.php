@@ -36,33 +36,39 @@ final class NoteRepo
         return (int) $this->app->db->lastId();
     }
 
-    public function saveBody(int $id, string $body, array $extra = []): void
+    public function saveBody(int $id, string $body, array $extra = []): bool
     {
-        $sql = 'UPDATE notes SET body = ?';
-        $params = [$body];
-        if (isset($extra['editor_set_writer_id'])) {
-            $sql .= ', editor_set_writer_id = ?';
-            $params[] = $extra['editor_set_writer_id'];
+        try {
+            $sql = 'UPDATE notes SET body = ?';
+            $params = [$body];
+            if (isset($extra['editor_set_writer_id'])) {
+                $sql .= ', editor_set_writer_id = ?';
+                $params[] = $extra['editor_set_writer_id'];
+            }
+            if (isset($extra['editor_set_block'])) {
+                $sql .= ', editor_set_block = ?';
+                $params[] = $extra['editor_set_block'];
+            }
+            if (isset($extra['type'])) {
+                $sql .= ', type = ?';
+                $params[] = $extra['type'];
+            }
+            if (isset($extra['status'])) {
+                $sql .= ', status = ?';
+                $params[] = $extra['status'];
+            }
+            if (array_key_exists('pinned', $extra)) {
+                $sql .= ', pinned = ?';
+                $params[] = $extra['pinned'] ? 1 : 0;
+            }
+            $sql .= ', seen_writer = \'new\' WHERE id = ?';
+            $params[] = $id;
+            $this->app->db->run($sql, $params);
+            $row = $this->find($id);
+            return $row && (string) $row['body'] === $body;
+        } catch (Throwable $e) {
+            return false;
         }
-        if (isset($extra['editor_set_block'])) {
-            $sql .= ', editor_set_block = ?';
-            $params[] = $extra['editor_set_block'];
-        }
-        if (isset($extra['type'])) {
-            $sql .= ', type = ?';
-            $params[] = $extra['type'];
-        }
-        if (isset($extra['status'])) {
-            $sql .= ', status = ?';
-            $params[] = $extra['status'];
-        }
-        if (array_key_exists('pinned', $extra)) {
-            $sql .= ', pinned = ?';
-            $params[] = $extra['pinned'] ? 1 : 0;
-        }
-        $sql .= ', seen_writer = \'new\' WHERE id = ?';
-        $params[] = $id;
-        $this->app->db->run($sql, $params);
     }
 
     public function markRead(int $id): void
