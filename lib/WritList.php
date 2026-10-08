@@ -314,7 +314,7 @@ final class WritList
                 } elseif ($type === 'admin') {
                     echo '<th>Facilities</th>';
                 }
-                echo '<th></th><th class="bulk_check"></th></tr>';
+                echo '<th></th><th></th><th class="bulk_check"></th></tr>';
                 $cc = 'lr';
                 foreach ($rows as $row) {
                     $id = (int) $row['id'];
@@ -341,8 +341,8 @@ final class WritList
                         }
                         echo '<input type="submit" name="save_admin_facilities" class="lt_button small" value="Save"></form></td>';
                     }
-                    echo '<td class="account-actions">' . button('Meta', 'Login and authenticator status', 'meta.php?u=' . $id, 'editNoteButton')
-                        . button('Edit', 'Change password and account', 'account.php?u=' . $id, 'editNoteButton') . '</td>';
+                    echo '<td class="account-actions">' . button('Meta', 'Login and authenticator status', 'meta.php?u=' . $id, 'editNoteButton') . '</td>';
+                    echo '<td class="account-actions">' . button('Edit', 'Change password and account', 'account.php?u=' . $id, 'editNoteButton') . '</td>';
                     echo '<td class="bulk_check"><input type="checkbox" form="bulk_actions" name="bulk_' . $id . '" value="' . $id . '"></td>';
                     echo '</tr>';
                     $cc = $cc === 'lr' ? 'dr' : 'lr';
