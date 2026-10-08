@@ -1950,8 +1950,9 @@ table.list tr.browser_save td {
   box-shadow: inset 0 0 0 999px rgba(174, 95, 60, 0.28);
 }
 
-td.account-actions a + a {
-  margin-left: 0.4em;
+td.account-actions {
+  white-space: nowrap;
+  width: 1%;
 }
 
 /* Light themes opt in with `@tone light` in the theme file.
