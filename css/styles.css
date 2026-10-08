@@ -882,23 +882,38 @@ button.act_green {
   color: #f71771;
 }
 
-/* Dormant controls keep their own fill. Only the label fades into it. */
+/* Non-clickable controls. One class: gray fill, not-allowed cursor, no pink hover. */
 .btn-dormant,
 .btn-dormant:hover,
 .btn-dormant:disabled,
 button.btn-dormant,
 button.btn-dormant:hover,
+button.btn-dormant:disabled,
 button.act_disabled.btn-dormant,
 button.act_disabled.btn-dormant:hover,
 input.btn-dormant,
 input.btn-dormant:hover,
 input.btn-dormant:disabled,
 form input.btn-dormant,
+form input.btn-dormant:hover,
+form input.btn-dormant:disabled,
+form input.lt_button.btn-dormant,
+form input.lt_button.btn-dormant:hover,
 form input.set_writ_disabled.btn-dormant,
 form input.set_writ_disabled.btn-dormant:hover,
-form input.lt_button.btn-dormant,
-form input.lt_button.btn-dormant:hover {
-  color: rgb(204 204 204 / 32%);
+form input.set_writ_gray.btn-dormant,
+form input.set_writ_gray.btn-dormant:hover,
+form input.set_writ_green.btn-dormant:hover,
+form input.set_writ_orange.btn-dormant:hover,
+form input.set_writ_blue.btn-dormant:hover,
+form input.set_writ_red.btn-dormant:hover,
+form input.set_gray.btn-dormant:hover,
+input.small.btn-dormant:hover,
+button.small.btn-dormant:hover {
+  cursor: not-allowed;
+  background-color: #3c3c3c;
+  color: #555;
+  border-color: transparent;
 }
 
 input.small:hover,
@@ -2042,14 +2057,33 @@ html.tone-light form input.set_writ_blue:hover {
 html.tone-light .btn-dormant,
 html.tone-light .btn-dormant:hover,
 html.tone-light .btn-dormant:disabled,
+html.tone-light button.btn-dormant,
+html.tone-light button.btn-dormant:hover,
+html.tone-light button.btn-dormant:disabled,
+html.tone-light button.act_disabled.btn-dormant,
+html.tone-light button.act_disabled.btn-dormant:hover,
+html.tone-light input.btn-dormant,
+html.tone-light input.btn-dormant:hover,
+html.tone-light input.btn-dormant:disabled,
+html.tone-light form input.btn-dormant,
+html.tone-light form input.btn-dormant:hover,
 html.tone-light form input.lt_button.btn-dormant,
 html.tone-light form input.lt_button.btn-dormant:hover,
 html.tone-light form input.set_writ_disabled.btn-dormant,
-html.tone-light button.act_disabled.btn-dormant,
-html.tone-light button.act_disabled.btn-dormant:hover {
-  background-color: #efe8e0;
-  color: rgb(44 44 44 / 38%);
-  border-color: #c8bfb6;
+html.tone-light form input.set_writ_disabled.btn-dormant:hover,
+html.tone-light form input.set_writ_gray.btn-dormant:hover,
+html.tone-light form input.set_writ_green.btn-dormant:hover,
+html.tone-light form input.set_writ_orange.btn-dormant:hover,
+html.tone-light form input.set_writ_blue.btn-dormant:hover,
+html.tone-light form input.set_writ_red.btn-dormant:hover,
+html.tone-light form input.set_gray.btn-dormant:hover,
+html.tone-light .lt_button.btn-dormant:hover,
+html.tone-light button.lt_button.btn-dormant:hover,
+html.tone-light input.lt_button.btn-dormant:hover {
+  cursor: not-allowed;
+  background-color: #d7d0c8;
+  color: #8d877f;
+  border-color: transparent;
 }
 
 
