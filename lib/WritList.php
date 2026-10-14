@@ -11,9 +11,9 @@ final class WritList
         $this->app = $app;
     }
 
-    public function renderWriter(string $whereAmI, string $term = 'current'): void
+    public function renderWriter(string $whereAmI, string $term = 'current', string $kind = ''): void
     {
-        $this->writTable($whereAmI, 'writer', $term, $this->app->auth->id(), null);
+        $this->writTable($whereAmI, 'writer', $term, $this->app->auth->id(), null, [], $kind);
     }
 
     public function renderEditor(string $whereAmI, string $review = 'current'): void
@@ -23,9 +23,9 @@ final class WritList
     }
 
     /** @param list<int> $writerIds */
-    public function renderObserver(string $whereAmI, array $writerIds): void
+    public function renderObserver(string $whereAmI, array $writerIds, string $term = 'current', string $kind = ''): void
     {
-        $this->writTable($whereAmI, 'observer', 'current', null, null, $writerIds);
+        $this->writTable($whereAmI, 'observer', $term, null, null, $writerIds, $kind);
     }
 
     public function dashSortBar(string $whereAmI, string $formId = 'searchformdash'): array
