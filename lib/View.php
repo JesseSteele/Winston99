@@ -169,22 +169,29 @@ final class View
             echo '<li class="user">' . button('Blocks', 'Manage blocks', 'blocks-editor.php', 'navDarkButton user ' . $is('blocks')) . '</li>';
         } elseif ($dash === 'observer') {
             echo '<li class="user">' . button('Writs', 'Writs', 'writs-observer.php', 'navDarkButton user ' . $is('owrits')) . '</li>';
-            echo '<li class="user">' . button('Observees', 'View observed writers', 'observer.php', 'navDarkButton user ' . $is('observer')) . '</li>';
+            echo '<li class="user">' . button('Assignments', 'Assignments', 'assignments.php', 'navDarkButton user ' . $is('assign')) . '</li>';
+            echo '<li class="user">' . button('Tests', 'Tests', 'tests.php', 'navDarkButton user ' . $is('tests')) . '</li>';
+            echo '<li class="user">' . button('Archives', 'Archives', 'archives.php', 'navDarkButton user ' . $is('archives')) . '</li>';
             echo '<li class="user">' . button('Memos', 'List memos', 'memos-observer.php', 'navDarkButton user ' . $is('memos')) . '</li>';
+            echo '<li class="user">' . button('Notes', 'Notes', 'notes.php', 'navDarkButton user ' . $is('notes')) . '</li>';
+            echo '<li class="user">' . button('Observees', 'View observed writers', 'observer.php', 'navDarkButton user ' . $is('observer')) . '</li>';
         } elseif ($dash === 'editor') {
-            echo '<li class="user">' . button('Archives', 'Editor archives', 'archives-editor.php', 'navDarkButton user ' . $is('archives')) . '</li>';
-            echo '<li class="user">' . button('Tests', 'Compose and list tests', 'tests.php', 'navDarkButton user ' . $is('tests')) . '</li>';
-            echo '<li class="user">' . button('Assignments', 'Assigned writs', 'assignments.php', 'navDarkButton user ' . $is('assign')) . '</li>';
             echo '<li class="user">' . button('Writs', 'List writs', 'writs-editor.php', 'navDarkButton user ' . $is('ewrits')) . '</li>';
+            echo '<li class="user">' . button('Assignments', 'Assigned writs', 'assignments.php', 'navDarkButton user ' . $is('assign')) . '</li>';
+            echo '<li class="user">' . button('Tests', 'Compose and list tests', 'tests.php', 'navDarkButton user ' . $is('tests')) . '</li>';
+            echo '<li class="user">' . button('Archives', 'Editor archives', 'archives-editor.php', 'navDarkButton user ' . $is('archives')) . '</li>';
+            echo '<li class="user">' . button('Memos', 'List memos', 'memos-editor.php', 'navDarkButton user ' . $is('memos')) . '</li>';
+            echo '<li class="user">' . button('Notes', 'Notes', 'notes.php', 'navDarkButton user ' . $is('notes')) . '</li>';
             echo '<li class="user">' . button('Roll', 'Writers by student', 'roll.php', 'navDarkButton user ' . $is('roll')) . '</li>';
             echo '<li class="user">' . button('My Blocks', 'Blocks you edit', 'my-blocks.php', 'navDarkButton user ' . $is('myblocks')) . '</li>';
-            echo '<li class="user">' . button('Memos', 'List memos', 'memos-editor.php', 'navDarkButton user ' . $is('memos')) . '</li>';
         } elseif ($dash === 'writer') {
-            echo '<li class="user">' . button('Archives', 'Archives', 'archives.php', 'navDarkButton user ' . $is('archives')) . '</li>';
             echo '<li class="user">' . button('Writs', 'View writs', 'writs.php', 'navDarkButton user ' . $is('writs')) . '</li>';
-            echo '<li class="user">' . button('Blocks', 'View blocks', 'blocks.php', 'navDarkButton user ' . $is('blocks')) . '</li>';
-            echo '<li class="user">' . button('Notes', 'View notes', 'notes.php', 'navDarkButton user ' . $is('notes')) . '</li>';
+            echo '<li class="user">' . button('Assignments', 'Assignments', 'assignments.php', 'navDarkButton user ' . $is('assign')) . '</li>';
+            echo '<li class="user">' . button('Tests', 'Tests', 'tests.php', 'navDarkButton user ' . $is('tests')) . '</li>';
+            echo '<li class="user">' . button('Archives', 'Archives', 'archives.php', 'navDarkButton user ' . $is('archives')) . '</li>';
             echo '<li class="user">' . button('Memos', 'View memos & tasks', 'memos.php', 'navDarkButton user ' . $is('memos')) . '</li>';
+            echo '<li class="user">' . button('Notes', 'View notes', 'notes.php', 'navDarkButton user ' . $is('notes')) . '</li>';
+            echo '<li class="user">' . button('Blocks', 'View blocks', 'blocks.php', 'navDarkButton user ' . $is('blocks')) . '</li>';
         }
         echo '<li class="user">' . button($noteLabel, 'Notifications', 'notifications.php', 'navDarkButton user ' . $is('notify')) . '</li>';
         echo '<li class="user">' . button($lockerLabel, $lockerLabel, $lockerHref, 'navDarkButton user ' . $is('locker')) . '</li>';
