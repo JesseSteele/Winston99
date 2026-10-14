@@ -680,4 +680,44 @@
     pwThemeLive();
     pwPaintBrowserSaves();
   }
+
+  /* One-shot controls: first click stands, a second click on this page does nothing.
+     Save and other stay-on-the-page controls are left alone. No visible change. */
+  function pwOnceSave(el) {
+    if (!el || !el.getAttribute) return false;
+    var name = (el.getAttribute('name') || '').toLowerCase();
+    if (name.indexOf('save') !== -1) return true;
+    var val = el.tagName === 'INPUT' ? (el.value || '') : (el.textContent || '');
+    val = val.replace(/\s+/g, ' ').trim().toLowerCase();
+    return val === 'save';
+  }
+
+  document.addEventListener('click', function (e) {
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var t = e.target;
+    if (!t || !t.closest) return;
+    var a = t.closest('a[href]');
+    if (!a) return;
+    var href = a.getAttribute('href') || '';
+    if (href === '' || href.charAt(0) === '#') return;
+    if (a.getAttribute('data-pw-fired') === '1') {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    a.setAttribute('data-pw-fired', '1');
+  }, true);
+
+  document.addEventListener('submit', function (e) {
+    var form = e.target;
+    if (!form || !form.getAttribute) return;
+    var sub = e.submitter || null;
+    if (sub && (pwOnceSave(sub) || (sub.classList && (sub.classList.contains('pw-confirm-go') || sub.classList.contains('pw-confirm-cancel'))))) return;
+    if (form.getAttribute('data-pw-fired') === '1') {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    form.setAttribute('data-pw-fired', '1');
+  }, true);
 })();
