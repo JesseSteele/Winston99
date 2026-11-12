@@ -823,7 +823,7 @@ final class WritList
                 if ($mode !== 'observer') {
                     $this->bulkBar($mode, $status, $this->app->auth->id(), $whereAmI);
                 }
-                echo browser_save_mount('writ');
+                echo browser_save_mount('writ', $mode);
                 echo '<table class="list writ lt sans"><tbody><tr><th></th><th>Work</th><th>Title</th>';
                 if ($mode === 'writer') {
                     echo '<th>Block</th><th>Status</th><th>Edits</th><th>Score</th>';

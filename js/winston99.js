@@ -140,6 +140,86 @@
     pwPaintBrowserSaves();
   };
 
+  function pwWritTable(mount) {
+    var el = mount.nextElementSibling;
+    while (el && el.tagName !== 'TABLE') el = el.nextElementSibling;
+    if (el && el.classList && el.classList.contains('writ')) return el;
+    return null;
+  }
+
+  function pwBrowserActor(href) {
+    href = String(href || '');
+    if (href.indexOf('review.php') !== -1) return 'editor';
+    if (href.indexOf('writ.php') !== -1 || href.indexOf('take-test.php') !== -1) return 'writer';
+    return '';
+  }
+
+  function pwRecoverButton(it) {
+    var href = String(it.href || 'writ.php');
+    var action = href.split('?')[0].split('/').pop() || 'writ.php';
+    var id = String(it.id == null ? '' : it.id);
+    var q = href.split('?')[1] || '';
+    q.split('&').forEach(function (part) {
+      var kv = part.split('=');
+      if (decodeURIComponent(kv[0] || '') === 'w' && kv.length > 1) id = decodeURIComponent(kv.slice(1).join('='));
+    });
+    return '<form action="' + pwEsc(action) + '" method="get" style="display:inline">'
+      + '<input type="hidden" name="w" value="' + pwEsc(id) + '">'
+      + '<input type="submit" title="Recover the copy saved in this browser" value="Recover" class="set_writ_orange">'
+      + '</form>';
+  }
+
+  function pwPaintWritSaves(mount, rows) {
+    mount.innerHTML = '';
+    var table = pwWritTable(mount);
+    var mode = mount.getAttribute('data-mode') || '';
+    if (table) {
+      var old = table.querySelectorAll('tr.browser-save-extra');
+      for (var e = 0; e < old.length; e++) old[e].parentNode.removeChild(old[e]);
+      var tinted = table.querySelectorAll('tr.browser_save');
+      for (var t = 0; t < tinted.length; t++) {
+        tinted[t].classList.remove('browser_save');
+        var prev = tinted[t].querySelector('input[data-pw-recover]');
+        if (prev) {
+          prev.value = prev.getAttribute('data-pw-label') || prev.value;
+          prev.removeAttribute('data-pw-recover');
+        }
+      }
+    }
+    if (!rows.length || !table) return;
+    var header = table.querySelector('tr');
+    var cols = header ? header.children.length : 0;
+    rows.forEach(function (it) {
+      var id = String(it.id == null ? '' : it.id);
+      var tr = null;
+      var hiddens = table.querySelectorAll('input[name="w"]');
+      for (var h = 0; h < hiddens.length; h++) {
+        if (hiddens[h].value === id) {
+          tr = hiddens[h].closest ? hiddens[h].closest('tr') : null;
+          break;
+        }
+      }
+      if (tr) {
+        var orange = tr.querySelector('input.set_writ_orange');
+        if (!orange) return;
+        tr.classList.add('browser_save');
+        if (!orange.getAttribute('data-pw-label')) orange.setAttribute('data-pw-label', orange.value);
+        orange.value = 'Recover';
+        orange.title = 'Recover the copy saved in this browser';
+        orange.setAttribute('data-pw-recover', '1');
+        return;
+      }
+      if (pwBrowserActor(it.href) !== mode) return;
+      var work = it.fields && it.fields.work ? it.fields.work : '';
+      var title = it.title || ('#' + id);
+      var html = '<tr class="lr browser_save browser-save-extra"><td>' + pwRecoverButton(it) + '</td>'
+        + '<td>' + pwEsc(work) + '</td><td>' + pwEsc(title) + '</td>';
+      for (var c = 3; c < cols; c++) html += '<td></td>';
+      html += '</tr>';
+      if (header) header.insertAdjacentHTML('afterend', html);
+    });
+  }
+
   function pwPaintBrowserSaves() {
     var mounts = document.querySelectorAll('.browser-save-mount');
     if (!mounts.length) return;
@@ -152,6 +232,10 @@
         if (all[k] && all[k].kind === kind) rows.push(all[k]);
       });
       rows.sort(function (a, b) { return (b.at || 0) - (a.at || 0); });
+      if (kind === 'writ') {
+        pwPaintWritSaves(mount, rows);
+        continue;
+      }
       if (!rows.length) { mount.innerHTML = ''; continue; }
       var html = '<table class="list lt sans"><tbody>';
       for (var i = 0; i < rows.length; i++) {
