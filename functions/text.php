@@ -163,10 +163,11 @@ function browser_save_script(array $item): string
     return '<script>if (window.pwRememberBrowser) pwRememberBrowser(' . $json . ');</script>';
 }
 
-function browser_save_mount(string $kind): string
+function browser_save_mount(string $kind, string $mode = ''): string
 {
     $kind = htmlspecialchars($kind, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-    return '<div class="browser-save-mount" data-kind="' . $kind . '"></div>';
+    $mode = htmlspecialchars($mode, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    return '<div class="browser-save-mount" data-kind="' . $kind . '" data-mode="' . $mode . '"></div>';
 }
 
 function msg_warning(string $text): string

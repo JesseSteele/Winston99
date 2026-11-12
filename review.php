@@ -126,7 +126,7 @@ echo '<input name="title" value="' . h($w['title']) . '">';
 echo '<h4 class="review">Writer draft</h4><section class="writcontent draft">' . nl_text($w['draft']) . '</section>';
 echo '<p class="sans">Word count: ' . (int) $w['draft_wordcount'] . '</p>';
 echo '<p class="save-row"><button type="button" class="lt_button" title="Save (Ctrl + S)" onclick="pwAjaxForm(\'editsform\',\'ajax/save-review.php\',\'ajax_changes\');offNavWarn();">Save</button> ';
-echo '<span id="ajax_changes"></span></p>';
+echo '<span id="wordCount" class="wordCounter"></span> <span id="ajax_changes"></span></p>';
 echo '<p class="sans">Editor revision</p>';
 echo '<textarea name="edits" id="writingArea" class="writingBox" rows="12" cols="82" onchange="onNavWarn()">' . h($w['edits'] ?: $w['draft']) . '</textarea>';
 echo '<p class="sans">Edit notes</p>';
@@ -143,5 +143,5 @@ echo '<textarea name="notes" class="writingBox" rows="3">' . h($w['notes']) . '<
 echo '<input type="hidden" name="save_edit" value="1">';
 echo '</form>';
 echo comments_markup($app->writ->comments($wid), $wid, false, $app->auth->id(), $app->csrf->token());
-echo '<script>pwBindSave("editsform","ajax/save-review.php","ajax_changes");</script>';
+echo '<script>pwWord("writingArea","wordCount","wordCountInput");pwBindSave("editsform","ajax/save-review.php","ajax_changes");</script>';
 $app->view->end();
