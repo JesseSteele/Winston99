@@ -4,6 +4,7 @@ declare(strict_types=1);
 /**
  * Google and GitHub OAuth. SysAdmin puts client id/secret in config.
  * After social login, Authenticator / passkey still apply if the account has them.
+ * Linking while logged in attaches to the current account. Login never creates a new user.
  */
 final class OAuth
 {
@@ -63,7 +64,7 @@ final class OAuth
         throw new RuntimeException('unknown provider');
     }
 
-    /** @return array{ok:bool,need?:string,error?:string} */
+    /** @return array{ok:bool,need?:string,error?:string,link?:bool} */
     public function finish(string $code, string $state): array
     {
         if ($state === '' || $state !== ($_SESSION['oauth_state'] ?? '')) {
@@ -107,11 +108,7 @@ final class OAuth
             }
         }
         if (!$u) {
-            $u = $this->provision($profile);
-            $db->run(
-                'INSERT INTO oauth_identities (user_id, provider, subject, email) VALUES (?,?,?,?)',
-                [$u['id'], $p, $profile['sub'], $profile['email']]
-            );
+            return ['ok' => false, 'error' => 'No matching account. Sign in with username/password first, then link this provider from Security.'];
         }
         if (($u['status'] ?? '') !== 'active') {
             return ['ok' => false, 'error' => 'This account is not active.'];
@@ -196,33 +193,6 @@ final class OAuth
             ];
         }
         return null;
-    }
-
-    private function provision(array $profile): array
-    {
-        $base = preg_replace('/[^A-Za-z0-9]/', '', strtok($profile['email'] ?: $profile['name'], '@')) ?: 'user';
-        $base = substr($base, 0, 20);
-        if (strlen($base) < 4) {
-            $base .= 'user';
-        }
-        $uname = $base;
-        $n = 0;
-        while ($this->app->user->findByUsername($uname)) {
-            $n++;
-            $uname = substr($base, 0, 24) . $n;
-        }
-        $email = $profile['email'] !== '' ? $profile['email'] : $uname . '@oauth.local';
-        $fid = $this->app->db->val('SELECT id FROM facilities ORDER BY id LIMIT 1');
-        $id = $this->app->user->create([
-            'type' => 'writer',
-            'facility_id' => $fid,
-            'username' => $uname,
-            'email' => $email,
-            'name' => $profile['name'] ?: $uname,
-            'pass' => null,
-            'status' => 'active',
-        ]);
-        return $this->app->user->find($id);
     }
 
     private function postForm(string $url, array $fields, bool $acceptJson = false): array
